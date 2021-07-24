@@ -13,16 +13,16 @@ static const char col_gray2[]       = "#444444";
 static const char col_gray3[]       = "#bbbbbb";
 static const char col_gray4[]       = "#eeeeee";
 static const char col_border[]      = "#005577";
-static const char col_bg_dark[]     = "#cb997e";
-static const char col_bg_light[]    = "#ddbea9";
-static const char col_fg_dark[]     = "#454536";
-static const char col_fg_light[]    = "#5b5b48";
+static const char col_bg_dark[]     = "#2d2d2d";
+static const char col_bg_light[]    = "#cc99cc";
+static const char col_fg_dark[]     = "#2d2d2d";
+static const char col_fg_light[]    = "#d3d0c8";
 
 
 static const char *colors[][3]      = {
 	/*               fg         bg         border   */
-	[SchemeNorm] = { col_fg_light, col_bg_light, col_gray2 },
-	[SchemeSel]  = { col_fg_dark, col_bg_dark,  col_bg_dark  },
+	[SchemeNorm] = { col_fg_light, col_bg_dark, col_bg_dark },
+	[SchemeSel]  = { col_fg_dark, col_bg_light,  col_bg_light  },
 };
 
 /* tagging */
@@ -35,6 +35,7 @@ static const Rule rules[] = {
 	 */
 	/* class      instance    title       tags mask     isfloating   monitor */
 	{ "Gimp",     NULL,       NULL,       0,            1,           -1 },
+	{ "qutebrowser",  NULL,       NULL,       1 << 8,       0,           -1 },
 	{ "firefox",  NULL,       NULL,       1 << 8,       0,           -1 },
 	{ "discord",  NULL,       NULL,       1 << 3,       0,           -1 },
 };
@@ -64,12 +65,12 @@ static const Layout layouts[] = {
 
 /* commands */
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
-static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_bg_light, "-nf", col_fg_dark, "-sb", col_bg_dark, "-sf", col_fg_light, NULL };
+static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_bg_dark, "-nf", col_fg_light, "-sb", col_bg_light, "-sf", col_fg_dark, NULL };
 static const char *termcmd[]  = { "urxvt", NULL };
 #include "shiftview.c"
 static Key keys[] = {
 	/* modifier                     key        function        argument */
-	{ MODKEY,                       XK_p,      spawn,          {.v = dmenucmd } },
+	{ 0,                       	XK_Super_L,spawn,          {.v = dmenucmd } },
 	{ MODKEY,		        XK_Return, spawn,          {.v = termcmd } },
 	{ MODKEY,                       XK_b,      togglebar,      {0} },
 	{ MODKEY,                       XK_j,      focusstack,     {.i = +1 } },
