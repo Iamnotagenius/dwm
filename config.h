@@ -6,8 +6,8 @@ static const unsigned int gappx     = 1;        /* gaps between windows */
 static const unsigned int snap      = 32;       /* snap pixel */
 static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 1;        /* 0 means bottom bar */
-static const char *fonts[]          = { "iosevka:size=20", "fontawesome:size=20" };
-static const char dmenufont[]       = "iosevka:size=20";
+static const char *fonts[]          = { "iosevka:size=14", "fontawesome:size=14" };
+static const char dmenufont[]       = "iosevka:size=14";
 static const char col_gray1[]       = "#222222";
 static const char col_gray2[]       = "#444444";
 static const char col_gray3[]       = "#bbbbbb";
@@ -37,7 +37,7 @@ static const Rule rules[] = {
 	{ "Gimp",     NULL,       NULL,       0,            1,           -1 },
 	{ "qutebrowser",  NULL,       NULL,       1 << 8,       0,           -1 },
 	{ "firefox",  NULL,       NULL,       1 << 8,       0,           -1 },
-	{ "discord",  NULL,       NULL,       1 << 3,       0,           -1 },
+	{ "discord",  NULL,       NULL,       1 << 3,       0,           0 },
 };
 
 /* layout(s) */
@@ -53,7 +53,7 @@ static const Layout layouts[] = {
 };
 
 /* key definitions */
-#define MODKEY Mod1Mask
+#define MODKEY Mod4Mask
 #define TAGKEYS(KEY,TAG) \
 	{ MODKEY,                       KEY,      view,           {.ui = 1 << TAG} }, \
 	{ MODKEY|ControlMask,           KEY,      toggleview,     {.ui = 1 << TAG} }, \
@@ -70,7 +70,7 @@ static const char *termcmd[]  = { "urxvt", NULL };
 #include "shiftview.c"
 static Key keys[] = {
 	/* modifier                     key        function        argument */
-	{ 0,                       	XK_Super_L,spawn,          {.v = dmenucmd } },
+	{ MODKEY,			XK_p,	   spawn,	   {.v = dmenucmd } },
 	{ MODKEY,		        XK_Return, spawn,          {.v = termcmd } },
 	{ MODKEY,                       XK_b,      togglebar,      {0} },
 	{ MODKEY,                       XK_j,      focusstack,     {.i = +1 } },
