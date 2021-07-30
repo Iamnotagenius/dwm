@@ -2,12 +2,18 @@
 
 /* appearance */
 static const unsigned int borderpx  = 2;        /* border pixel of windows */
-static const unsigned int gappx     = 1;        /* gaps between windows */
+static const unsigned int gappx     = 10;        /* gaps between windows */
 static const unsigned int snap      = 32;       /* snap pixel */
+static const unsigned int systraypinning = 0;   /* 0: sloppy systray follows selected monitor, >0: pin systray to monitor X */
+static const unsigned int systrayonleft = 1;   	/* 0: systray in the right corner, >0: systray on left of status text */
+static unsigned int systrayspacing = 3;   /* systray spacing */
+static const int systraypinningfailfirst = 1;   /* 1: if pinning fails, display systray on the first monitor, False: display systray on the last monitor*/
+static const int showsystray        = 1;     /* 0 means no systray */
 static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 1;        /* 0 means bottom bar */
 static const char *fonts[]          = { "iosevka:size=14", "fontawesome:size=14" };
 static const char dmenufont[]       = "iosevka:size=14";
+static const char dmenulines[]      = "15";
 static const char col_bg_dark[]     = "#2d2d2d";
 static const char col_bg_light[]    = "#cc99cc";
 static const char col_fg_dark[]     = "#2d2d2d";
@@ -21,7 +27,7 @@ static const char *colors[][3]      = {
 };
 
 /* tagging */
-static const char *tags[] = { "", "", "", "", "", "", "", "", "" };
+static const char *tags[] = { "", "", "", "", "", "", "", "", "" };
 
 static const Rule rules[] = {
 	/* xprop(1):
@@ -35,6 +41,7 @@ static const Rule rules[] = {
 	{ "Zathura",  		NULL,       NULL,       1 << 1,       0,           -1 },
 	{ "discord",  		NULL,       NULL,       1 << 3,       0,           1 },
 	{ "Steam",      	NULL,       NULL,       1 << 7,       0,           0 },
+	{ "mpv", 	     	NULL,       NULL,       1 << 4,       0,           0 },
 };
 
 /* layout(s) */
@@ -55,20 +62,22 @@ static const Layout layouts[] = {
 	{ MODKEY,                       KEY,      view,           {.ui = 1 << TAG} }, \
 	{ MODKEY|ControlMask,           KEY,      toggleview,     {.ui = 1 << TAG} }, \
 	{ MODKEY|ShiftMask,             KEY,      tag,            {.ui = 1 << TAG} }, \
-	{ MODKEY|ControlMask|ShiftMask,  KEY,      toggletag,      {.ui = 1 << TAG} },
+	{ MODKEY|ControlMask|ShiftMask, KEY,      toggletag,      {.ui = 1 << TAG} },
 
 /* helper for spawning shell commands in the pre dwm-5.0 fashion */
 #define SHCMD(cmd) { .v = (const char*[]){ "/bin/zsh", "-c", cmd, NULL } }
 
 /* commands */
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
-static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_bg_dark, "-nf", col_fg_light, "-sb", col_bg_light, "-sf", col_fg_dark, NULL };
+static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-l", dmenulines, "-fn", dmenufont, "-nb", col_bg_dark, "-nf", col_fg_light, "-sb", col_bg_light, "-sf", col_fg_dark, NULL };
 static const char *termcmd[]  = { "urxvt", NULL };
+static const char *flameshotcmd[]  = { "flameshot", "gui", NULL };
 #include "shiftview.c"
 static Key keys[] = {
 	/* modifier                     key        function        argument */
-	{ MODKEY,			XK_p,	   spawn,	   {.v = dmenucmd } },
-	{ MODKEY,		        XK_Return, spawn,          {.v = termcmd } },
+	{ 0,  							XK_Print,  spawn,	   	   {.v = flameshotcmd } },
+	{ MODKEY,						XK_p,	   spawn,	   	   {.v = dmenucmd } },
+	{ MODKEY,		        		XK_Return, spawn,          {.v = termcmd } },
 	{ MODKEY,                       XK_b,      togglebar,      {0} },
 	{ MODKEY,                       XK_j,      focusstack,     {.i = +1 } },
 	{ MODKEY,                       XK_k,      focusstack,     {.i = -1 } },
@@ -76,7 +85,7 @@ static Key keys[] = {
 	{ MODKEY,                       XK_d,      incnmaster,     {.i = -1 } },
 	{ MODKEY,                       XK_h,      setmfact,       {.f = -0.05} },
 	{ MODKEY,                       XK_l,      setmfact,       {.f = +0.05} },
-	{ MODKEY|ControlMask,  		XK_Return, zoom,           {0} },
+	{ MODKEY|ControlMask,  			XK_Return, zoom,           {0} },
 	{ MODKEY,                       XK_Tab,    view,           {0} },
 	{ MODKEY|ShiftMask,             XK_c,      killclient,     {0} },
 	{ MODKEY,                       XK_t,      setlayout,      {.v = &layouts[0]} },
@@ -84,10 +93,13 @@ static Key keys[] = {
 	{ MODKEY,                       XK_m,      setlayout,      {.v = &layouts[2]} },
 	{ MODKEY,                       XK_space,  setlayout,      {0} },
 	{ MODKEY|ShiftMask,             XK_space,  togglefloating, {-1} },
+	{ MODKEY|ShiftMask,             XK_f,      togglefullscr,  {0} },
 	{ MODKEY,                       XK_0,      view,           {.ui = ~0 } },
 	{ MODKEY|ShiftMask,             XK_0,      tag,            {.ui = ~0 } },
-	{ MODKEY,                       XK_comma,  shiftview,       {.i = -1 } },
-	{ MODKEY,                       XK_period, shiftview,       {.i = +1 } },
+	{ MODKEY,                       XK_comma,  shiftview,      {.i = -1 } },
+	{ MODKEY,                       XK_period, shiftview,      {.i = +1 } },
+	{ MODKEY,                       XK_slash,  focusmon,       {.i = +1 } },
+	{ MODKEY|ShiftMask,             XK_slash,  tagmon,         {.i = +1 } },
 	TAGKEYS(                        XK_1,                      0)
 	TAGKEYS(                        XK_2,                      1)
 	TAGKEYS(                        XK_3,                      2)
