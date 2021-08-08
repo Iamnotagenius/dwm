@@ -2,6 +2,7 @@
 
 /* appearance */
 static const unsigned int borderpx  = 2;        /* border pixel of windows */
+static const int decorhints  = 1;    /* 1 means respect decoration hints */
 static const unsigned int gappx     = 10;        /* gaps between windows */
 static const unsigned int snap      = 32;       /* snap pixel */
 static const unsigned int systraypinning = 0;   /* 0: sloppy systray follows selected monitor, >0: pin systray to monitor X */
@@ -27,7 +28,7 @@ static const char *colors[][3]      = {
 };
 
 /* tagging */
-static const char *tags[] = { "", "", "", "", "", "", "", "", "" };
+static const char *tags[] = { "", "", "", "", "", "", "", "", "" };
 
 static const Rule rules[] = {
 	/* xprop(1):
@@ -37,11 +38,15 @@ static const Rule rules[] = {
 	/* class    	  	instance    title       tags mask     isfloating   monitor */
 	{ "Gimp",     		NULL,       NULL,       0,            1,           -1 },
 	{ "qutebrowser",	NULL,       NULL,       1 << 8,       0,           -1 },
+	{ "Tor Browser",	NULL,       NULL,       1 << 8,       0,           -1 },
+	{ "LibreWolf",		NULL,       NULL,       1 << 8,       0,           -1 },
 	{ "firefox",  		NULL,       NULL,       1 << 8,       0,           -1 },
 	{ "Zathura",  		NULL,       NULL,       1 << 1,       0,           -1 },
 	{ "discord",  		NULL,       NULL,       1 << 3,       0,           1 },
 	{ "Steam",      	NULL,       NULL,       1 << 7,       0,           0 },
 	{ "mpv", 	     	NULL,       NULL,       1 << 4,       0,           0 },
+	{ "Code", 	     	NULL,       NULL,       1 << 2,       0,           -1 },
+	{ "kube", 	     	NULL,       NULL,       1 << 5,       0,           -1 },
 };
 
 /* layout(s) */
@@ -72,9 +77,11 @@ static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() 
 static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-l", dmenulines, "-fn", dmenufont, "-nb", col_bg_dark, "-nf", col_fg_light, "-sb", col_bg_light, "-sf", col_fg_dark, NULL };
 static const char *termcmd[]  = { "urxvt", NULL };
 static const char *flameshotcmd[]  = { "flameshot", "gui", NULL };
+static const char *startgamecmd[]  = { "/home/iamnotagenius/scripts/startgame.sh", NULL };
 #include "shiftview.c"
 static Key keys[] = {
 	/* modifier                     key        function        argument */
+	{ MODKEY,  						XK_g,	   spawn,	   	   {.v = startgamecmd } },
 	{ 0,  							XK_Print,  spawn,	   	   {.v = flameshotcmd } },
 	{ MODKEY,						XK_p,	   spawn,	   	   {.v = dmenucmd } },
 	{ MODKEY,		        		XK_Return, spawn,          {.v = termcmd } },
@@ -149,6 +156,7 @@ static Command commands[] = {
 	{ "setlayout-mono",  setlayout,      {.v = &layouts[2]} },
 	{ "togglelayout",    setlayout,      {0} },
 	{ "togglefloating",  togglefloating, {0} },
+	{ "togglefullscr",   togglefullscr,  {0} },
 	{ "viewall",         view,           {.ui = ~0} },
 	{ "tag",             tag,            {.ui = ~0} },
 	{ "focusmon+",       focusmon,       {.i = +1} },
