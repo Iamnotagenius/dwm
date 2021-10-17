@@ -191,10 +191,12 @@ static void checkotherwm(void);
 static void cleanup(void);
 static void cleanupmon(Monitor *mon);
 static void clientmessage(XEvent *e);
+static void col(Monitor *);
 static void configure(Client *c);
 static void configurenotify(XEvent *e);
 static void configurerequest(XEvent *e);
 static Monitor *createmon(void);
+static void deck(Monitor *m);
 static void destroynotify(XEvent *e);
 static void detach(Client *c);
 static void detachstack(Client *c);
@@ -245,6 +247,7 @@ static void sendmon(Client *c, Monitor *m);
 static void setclientstate(Client *c, long state);
 static void setfocus(Client *c);
 static void setfullscreen(Client *c, int fullscreen);
+static void setlasttag(int tagbit);
 static void setgaps(const Arg *arg);
 static void setlayout(const Arg *arg);
 static void setmfact(const Arg *arg);
@@ -253,6 +256,7 @@ static void seturgent(Client *c, int urg);
 static void showhide(Client *c);
 static void sigchld(int unused);
 static void spawn(const Arg *arg);
+static void spawndefault();
 static Monitor *systraytomon(Monitor *m);
 static void tag(const Arg *arg);
 static void tagmon(const Arg *arg);
@@ -330,6 +334,8 @@ static Drw *drw;
 static Monitor *mons, *selmon;
 static Window root, wmcheckwin;
 static int fifofd;
+static int lastchosentag[8];
+static int previouschosentag[8];
 
 /* configuration, allows nested code to access above variables */
 #include "config.h"
@@ -2036,6 +2042,34 @@ tagmon(const Arg *arg)
 	sendmon(selmon->sel, dirtomon(arg->i));
 }
 
+
+ void
+col(Monitor *m) {
+	unsigned int i, n, h, w, x, y,mw;
+	Client *c;
+
+	for(n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++);
+	if(n == 0)
+		return;
+        if(n > m->nmaster)
+                mw = m->nmaster ? m->ww * m->mfact : 0;
+        else
+                mw = m->ww;
+	for(i = x = y = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++) {
+		if(i < m->nmaster) {
+			 w = (mw - x) / (MIN(n, m->nmaster)-i);
+                         resize(c, x + m->wx, m->wy, w - (2*c->bw), m->wh - (2*c->bw), False);
+			x += WIDTH(c);
+		}
+		else {
+			h = (m->wh - y) / (n - i);
+			resize(c, x + m->wx, m->wy + y, m->ww - x  - (2*c->bw), h - (2*c->bw), False);
+			y += HEIGHT(c);
+		}
+	}
+}
+
+
 void
 tile(Monitor *m)
 {
@@ -2125,6 +2159,7 @@ toggleview(const Arg *arg)
 
 	if (newtagset) {
 		selmon->tagset[selmon->seltags] = newtagset;
+		setlasttag(newtagset);
 		focus(NULL);
 		arrange(selmon);
 	}
@@ -2582,6 +2617,7 @@ view(const Arg *arg)
 {
 	if ((arg->ui & TAGMASK) == selmon->tagset[selmon->seltags])
 		return;
+	setlasttag(arg->ui);
 	selmon->seltags ^= 1; /* toggle sel tagset */
 	if (arg->ui & TAGMASK)
 		selmon->tagset[selmon->seltags] = arg->ui & TAGMASK;
@@ -2820,5 +2856,59 @@ centeredfloatingmaster(Monitor *m)
 		resize(c, m->wx + tx, m->wy, w - (2*c->bw),
 		       m->wh - (2*c->bw), 0);
 		tx += WIDTH(c);
+	}
+}
+
+void
+deck(Monitor *m) {
+	unsigned int i, n, h, mw, my;
+	Client *c;
+
+	for(n = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), n++);
+	if(n == 0)
+		return;
+
+	if(n > m->nmaster) {
+		mw = m->nmaster ? m->ww * m->mfact : 0;
+		snprintf(m->ltsymbol, sizeof m->ltsymbol, "[%d]", n - m->nmaster);
+	}
+	else
+		mw = m->ww;
+	for(i = my = 0, c = nexttiled(m->clients); c; c = nexttiled(c->next), i++)
+		if(i < m->nmaster) {
+			h = (m->wh - my) / (MIN(n, m->nmaster) - i);
+			resize(c, m->wx, m->wy + my, mw - (2*c->bw), h - (2*c->bw), False);
+			my += HEIGHT(c);
+		}
+		else
+			resize(c, m->wx + mw, m->wy, m->ww - mw - (2*c->bw), m->wh - (2*c->bw), False);
+}
+
+void
+setlasttag(int tagbit) {
+	const int mon = selmon->num;
+	if (tagbit > 0) {
+		int i = 1, pos = 0;
+		while (!(i & tagbit)) {
+			i = i << 1;
+			++pos;
+		}
+		previouschosentag[mon] = lastchosentag[mon];
+		lastchosentag[mon] = pos;
+	} else {
+		const int tempTag = lastchosentag[mon];
+		lastchosentag[mon] = previouschosentag[mon];
+		previouschosentag[mon] = tempTag;
+	}
+}
+
+void
+spawndefault()
+{
+	const char *app = defaulttagapps[lastchosentag[selmon->num]];
+	if (app) {
+		const char *defaultcmd[] = {app, NULL};
+		Arg a = {.v = defaultcmd};
+		spawn(&a);
 	}
 }

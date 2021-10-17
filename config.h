@@ -29,6 +29,7 @@ static const char *colors[][3]      = {
 
 /* tagging */
 static const char *tags[] = { "", "", "", "", "", "", "", "", "" };
+static const char *defaulttagapps[] = { "st", "zathura", "code", NULL, "urxvt -e cmus", "urxvt -e mail", "/home/iamnotagenius/VMs/Shindows11/start_vm.sh", "steam", "/home/iamnotagenius/scripts/browsers.sh" };
 
 static const Rule rules[] = {
 	/* xprop(1):
@@ -36,7 +37,7 @@ static const Rule rules[] = {
 	 *	WM_NAME(STRING) = title
 	 */
 	/* class    	  		instance    title       tags mask     isfloating 	canfocus  monitor */
-	{ "Qemu-system-x86_64",     			NULL,       NULL,       1 << 6,       0, 			1,        -1 },
+	{ "Qemu-system-x86_64", NULL,       NULL,       1 << 6,       0, 			1,        -1 },
 	{ "qutebrowser",		NULL,       NULL,       1 << 8,       0, 			1,        -1 },
 	{ "Tor Browser",		NULL,       NULL,       1 << 8,       0,       		1,     	  -1 },
 	{ "LibreWolf",			NULL,       NULL,       1 << 8,       0,          	1,		  -1 },
@@ -63,6 +64,8 @@ static const Layout layouts[] = {
 	{ "[M]",      monocle },
 	{ "|M|",      centeredmaster },
 	{ ">M>",      centeredfloatingmaster },
+	{ "|||",      col },
+	{ "[D]",      deck }
 };
 
 /* key definitions */
@@ -89,6 +92,7 @@ static Key keys[] = {
 	{ 0,  							XK_Print,  spawn,	   	   {.v = flameshotcmd } },
 	{ MODKEY,						XK_p,	   spawn,	   	   {.v = dmenucmd } },
 	{ MODKEY,		        		XK_Return, spawn,          {.v = termcmd } },
+	{ MODKEY,                       XK_s,      spawndefault,   {0} },
 	{ MODKEY,                       XK_b,      togglebar,      {0} },
 	{ MODKEY,                       XK_j,      focusstack,     {.i = +1 } },
 	{ MODKEY,                       XK_k,      focusstack,     {.i = -1 } },
@@ -104,6 +108,8 @@ static Key keys[] = {
 	{ MODKEY,                       XK_m,      setlayout,      {.v = &layouts[2]} },
 	{ MODKEY,                       XK_u,      setlayout,      {.v = &layouts[3]} },
 	{ MODKEY,                       XK_o,      setlayout,      {.v = &layouts[4]} },
+	{ MODKEY,                       XK_c,      setlayout,      {.v = &layouts[5]} },
+	{ MODKEY,                       XK_r,      setlayout,      {.v = &layouts[6]} },
 	{ MODKEY,                       XK_space,  setlayout,      {0} },
 	{ MODKEY|ShiftMask,             XK_space,  togglefloating, {-1} },
 	{ MODKEY|ShiftMask,             XK_f,      togglefullscr,  {0} },
