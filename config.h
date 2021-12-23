@@ -28,8 +28,8 @@ static const char *colors[][3]      = {
 };
 
 /* tagging */
-static const char *tags[] = { "", "", "", "", "", "", "", "", "" };
-static const char *defaulttagapps[] = { "st", "zathura", "code", NULL, "urxvt -e cmus", "urxvt -e mail", "/home/iamnotagenius/VMs/Shindows11/start_vm.sh", "steam", "/home/iamnotagenius/scripts/browsers.sh" };
+static const char *tags[] = { "", "", "", "", "", "", "", "" };
+static const char *defaulttagapps[] = { "alacritty", "zathura", "code", NULL, "urxvt -e cmus", "/home/iamnotagenius/VMs/Shindows11/start_vm.sh", "steam", "/home/iamnotagenius/scripts/browsers.sh" };
 
 static const Rule rules[] = {
 	/* xprop(1):
@@ -37,18 +37,18 @@ static const Rule rules[] = {
 	 *	WM_NAME(STRING) = title
 	 */
 	/* class    	  		instance    title       tags mask     isfloating 	canfocus  monitor */
-	{ "Qemu-system-x86_64", NULL,       NULL,       1 << 6,       0, 			1,        -1 },
-	{ "qutebrowser",		NULL,       NULL,       1 << 8,       0, 			1,        -1 },
-	{ "Tor Browser",		NULL,       NULL,       1 << 8,       0,       		1,     	  -1 },
-	{ "LibreWolf",			NULL,       NULL,       1 << 8,       0,          	1,		  -1 },
-	{ "firefox",  			NULL,       NULL,       1 << 8,       0,			1,        -1 },
+	{ "Qemu-system-x86_64", NULL,       NULL,       1 << 5,       0, 			1,        -1 },
+	{ "qutebrowser",		NULL,       NULL,       1 << 7,       0, 			1,        -1 },
+	{ "Chromium",			NULL,       NULL,       1 << 7,       0, 			1,        -1 },
+	{ "Tor Browser",		NULL,       NULL,       1 << 7,       0,       		1,     	  -1 },
+	{ "LibreWolf",			NULL,       NULL,       1 << 7,       0,          	1,		  -1 },
+	{ "firefox",  			NULL,       NULL,       1 << 7,       0,			1,        -1 },
 	{ "Zathura",  			NULL,       NULL,       1 << 1,       0,			1,        -1 },
 	{ "discord",  			NULL,       NULL,       1 << 3,       0,			1,         1 },
 	{ "TelegramDesktop",	NULL,       NULL,       1 << 3,       0,			1,         1 },
-	{ "Steam",      		NULL,       NULL,       1 << 7,       0,			1,         0 },
+	{ "Steam",      		NULL,       NULL,       1 << 6,       0,			1,         0 },
 	{ "mpv", 	     		NULL,       NULL,       1 << 4,       0,			1,         0 },
-	{ "Code", 	     		NULL,       NULL,       1 << 2,       0,			1,        -1 },
-	{ "kube", 	     		NULL,       NULL,       1 << 5,       0,			1,        -1 },
+	{ "code-oss",    		NULL,       NULL,       1 << 2,       0,			1,        -1 },
 	{ "Gnubiff", 	   		NULL,       "Popup",    0, 	      	  1,			0,        -1 },
 };
 
@@ -65,7 +65,9 @@ static const Layout layouts[] = {
 	{ "|M|",      centeredmaster },
 	{ ">M>",      centeredfloatingmaster },
 	{ "|||",      col },
-	{ "[D]",      deck }
+	{ "[D]",      deck },
+	{ "TTT",      bstack },
+	{ "===",      bstackhoriz },
 };
 
 /* key definitions */
@@ -82,7 +84,7 @@ static const Layout layouts[] = {
 /* commands */
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
 static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-l", dmenulines, "-fn", dmenufont, "-nb", col_bg_dark, "-nf", col_fg_light, "-sb", col_bg_light, "-sf", col_fg_dark, NULL };
-static const char *termcmd[]  = { "urxvt", NULL };
+static const char *termcmd[]  = { "alacritty", NULL };
 static const char *flameshotcmd[]  = { "flameshot", "gui", NULL };
 static const char *startgamecmd[]  = { "/home/iamnotagenius/scripts/startgame.sh", NULL };
 #include "shiftview.c"
@@ -107,9 +109,11 @@ static Key keys[] = {
 	{ MODKEY,                       XK_f,      setlayout,      {.v = &layouts[1]} },
 	{ MODKEY,                       XK_m,      setlayout,      {.v = &layouts[2]} },
 	{ MODKEY,                       XK_u,      setlayout,      {.v = &layouts[3]} },
-	{ MODKEY,                       XK_o,      setlayout,      {.v = &layouts[4]} },
+	{ MODKEY|ShiftMask,             XK_u,      setlayout,      {.v = &layouts[4]} },
 	{ MODKEY,                       XK_c,      setlayout,      {.v = &layouts[5]} },
 	{ MODKEY,                       XK_r,      setlayout,      {.v = &layouts[6]} },
+	{ MODKEY,                       XK_y,      setlayout,      {.v = &layouts[7]} },
+	{ MODKEY|ShiftMask,             XK_y,      setlayout,      {.v = &layouts[8]} },
 	{ MODKEY,                       XK_space,  setlayout,      {0} },
 	{ MODKEY|ShiftMask,             XK_space,  togglefloating, {-1} },
 	{ MODKEY|ShiftMask,             XK_f,      togglefullscr,  {0} },
@@ -127,7 +131,6 @@ static Key keys[] = {
 	TAGKEYS(                        XK_6,                      5)
 	TAGKEYS(                        XK_7,                      6)
 	TAGKEYS(                        XK_8,                      7)
-	TAGKEYS(                        XK_9,                      8)
 	{ MODKEY|ShiftMask,             XK_q,      quit,           {0} },
 };
 
