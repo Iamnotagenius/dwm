@@ -5,6 +5,7 @@ static const unsigned int borderpx  = 2;        /* border pixel of windows */
 static const int decorhints  = 1;    /* 1 means respect decoration hints */
 static const unsigned int gappx     = 5;        /* gaps between windows */
 static const unsigned int snap      = 32;       /* snap pixel */
+static const int swallowfloating    = 0;        /* 1 means swallow floating windows by default */
 static const unsigned int systraypinning = 0;   /* 0: sloppy systray follows selected monitor, >0: pin systray to monitor X */
 static const unsigned int systrayonleft = 1;   	/* 0: systray in the right corner, >0: systray on left of status text */
 static unsigned int systrayspacing = 3;   /* systray spacing */
@@ -36,20 +37,21 @@ static const Rule rules[] = {
 	 *	WM_CLASS(STRING) = instance, class
 	 *	WM_NAME(STRING) = title
 	 */
-	/* class    	  		instance    title       tags mask     isfloating 	canfocus  monitor */
-	{ "Qemu-system-x86_64", NULL,       NULL,       1 << 5,       0, 			1,        -1 },
-	{ "qutebrowser",		NULL,       NULL,       1 << 7,       0, 			1,        -1 },
-	{ "Chromium",			NULL,       NULL,       1 << 7,       0, 			1,        -1 },
-	{ "Tor Browser",		NULL,       NULL,       1 << 7,       0,       		1,     	  -1 },
-	{ "LibreWolf",			NULL,       NULL,       1 << 7,       0,          	1,		  -1 },
-	{ "firefox",  			NULL,       NULL,       1 << 7,       0,			1,        -1 },
-	{ "Zathura",  			NULL,       NULL,       1 << 1,       0,			1,        -1 },
-	{ "discord",  			NULL,       NULL,       1 << 3,       0,			1,         1 },
-	{ "TelegramDesktop",	NULL,       NULL,       1 << 3,       0,			1,         1 },
-	{ "Steam",      		NULL,       NULL,       1 << 6,       0,			1,         0 },
-	{ "mpv", 	     		NULL,       NULL,       1 << 4,       0,			1,         0 },
-	{ "code-oss",    		NULL,       NULL,       1 << 2,       0,			1,        -1 },
-	{ "Gnubiff", 	   		NULL,       "Popup",    0, 	      	  1,			0,        -1 },
+	/* class    	  		instance    title           tags mask   isfloating 	canfocus    isterminal  noswallow   monitor */
+	{ "Alacritty",    		NULL,       NULL,           0,          0,			1,          1,          0,          -1 },
+	{ "Qemu-system-x86_64", NULL,       NULL,           1 << 5,     0, 			1,          0,          0,          -1 },
+	{ "qutebrowser",		NULL,       NULL,           1 << 7,     0, 			1,          0,          0,          -1 },
+	{ "Chromium",			NULL,       NULL,           1 << 7,     0, 			1,          0,          0,          -1 },
+	{ "Tor Browser",		NULL,       NULL,           1 << 7,     0,       	1,          0,          0,    	    -1 },
+	{ "LibreWolf",			NULL,       NULL,           1 << 7,     0,         	1,	        0,	        0,          -1 },
+	{ "firefox",  			NULL,       NULL,           1 << 7,     0,			1,          0,          0,          -1 },
+	{ "Zathura",  			NULL,       NULL,           1 << 1,     0,			1,          0,          0,          -1 },
+	{ "discord",  			NULL,       NULL,           1 << 3,     0,			1,          0,          0,           1 },
+	{ "TelegramDesktop",	NULL,       NULL,           1 << 3,     0,			1,          0,          0,           1 },
+	{ "Steam",      		NULL,       NULL,           1 << 6,     0,			1,          0,          0,           0 },
+	{ "mpv", 	     		NULL,       NULL,           0,          0,			1,          0,          0,           0 },
+	{ "code-oss",    		NULL,       NULL,           0,          0,			1,          0,          0,          -1 },
+	{ NULL,                 NULL,       "Event Tester", 0,          0,          1,          0,          1,          -1 }, /* xev */
 };
 
 /* layout(s) */
