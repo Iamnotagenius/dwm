@@ -52,6 +52,7 @@ static const Rule rules[] = {
 	{ "mpv", 	     		NULL,       NULL,           0,          0,			1,          0,          0,           0 },
 	{ "code-oss",    		NULL,       NULL,           0,          0,			1,          0,          0,          -1 },
 	{ NULL,                 NULL,       "Event Tester", 0,          0,          1,          0,          1,          -1 }, /* xev */
+	{ "tabbed",             NULL,       NULL,           0,          0,          1,          0,          1,          -1 },
 };
 
 /* layout(s) */
@@ -90,6 +91,7 @@ static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-l", dmenulines,
 static const char *termcmd[]  = { "alacritty", NULL };
 static const char *flameshotcmd[]  = { "flameshot", "gui", NULL };
 static const char *startgamecmd[]  = { "/home/iamnotagenius/scripts/startgame.sh", NULL };
+static const char *layoutmenu_cmd = "layoutmenu.sh";
 #include "shiftview.c"
 static Key keys[] = {
 	/* modifier                     key        function        argument */
@@ -142,7 +144,7 @@ static Key keys[] = {
 static Button buttons[] = {
 	/* click                event mask      button          function        argument */
 	{ ClkLtSymbol,          0,              Button1,        setlayout,      {0} },
-	{ ClkLtSymbol,          0,              Button3,        setlayout,      {.v = &layouts[2]} },
+	{ ClkLtSymbol,          0,              Button3,        layoutmenu,     {0} },
 	{ ClkWinTitle,          0,              Button2,        zoom,           {0} },
 	{ ClkStatusText,        0,              Button2,        spawn,          {.v = termcmd } },
 	{ ClkClientWin,         MODKEY,         Button1,        movemouse,      {0} },
