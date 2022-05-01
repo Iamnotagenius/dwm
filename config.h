@@ -20,17 +20,28 @@ static const char col_bg_dark[]     = "#2d2d2d";
 static const char col_bg_light[]    = "#cc99cc";
 static const char col_fg_dark[]     = "#2d2d2d";
 static const char col_fg_light[]    = "#d3d0c8";
+static const char bg_active_tab[]    = "#98c379";
 
 
 static const char *colors[][3]      = {
 	/*               fg         bg         border   */
 	[SchemeNorm] = { col_fg_light, col_bg_dark, col_bg_dark },
 	[SchemeSel]  = { col_fg_dark, col_bg_light,  col_bg_light  },
+	[SchemeTabActive]  = { col_fg_dark, bg_active_tab,  bg_active_tab },
+	[SchemeTabInactive]  = { col_fg_light,  col_bg_dark,  col_bg_dark }
 };
 
 /* tagging */
 static const char *tags[] = { "", "", "", "", "", "", "", "" };
 static const char *defaulttagapps[] = { "alacritty", "zathura", "code", NULL, "urxvt -e cmus", "/home/iamnotagenius/VMs/Shindows11/start_vm.sh", "steam", "/home/iamnotagenius/scripts/browsers.sh" };
+/* Bartabgroups properties */
+#define BARTAB_BORDERS 0       // 0 = off, 1 = on
+#define BARTAB_BOTTOMBORDER 0  // 0 = off, 1 = on
+#define BARTAB_TAGSINDICATOR 0 // 0 = off, 1 = on if >1 client/view tag, 2 = always on
+#define BARTAB_TAGSPX 7        // # pixels for tag grid boxes
+#define BARTAB_TAGSROWS 2      // # rows in tag grid (9 tags, e.g. 3x3)
+static void (*bartabmonfns[])(Monitor *) = { monocle /* , customlayoutfn */ };
+static void (*bartabfloatfns[])(Monitor *) = { NULL /* , customlayoutfn */ };
 
 static const Rule rules[] = {
 	/* xprop(1):
