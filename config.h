@@ -20,14 +20,13 @@ static const char col_bg_dark[]     = "#2d2d2d";
 static const char col_bg_light[]    = "#cc99cc";
 static const char col_fg_dark[]     = "#2d2d2d";
 static const char col_fg_light[]    = "#d3d0c8";
-static const char bg_active_tab[]    = "#98c379";
 
 
 static const char *colors[][3]      = {
 	/*               fg         bg         border   */
 	[SchemeNorm] = { col_fg_light, col_bg_dark, col_bg_dark },
 	[SchemeSel]  = { col_fg_dark, col_bg_light,  col_bg_light  },
-	[SchemeTabActive]  = { col_fg_dark, bg_active_tab,  bg_active_tab },
+	[SchemeTabActive]  = { col_fg_light, col_bg_dark,  col_bg_dark },
 	[SchemeTabInactive]  = { col_fg_light,  col_bg_dark,  col_bg_dark }
 };
 
