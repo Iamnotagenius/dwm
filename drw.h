@@ -1,4 +1,8 @@
 /* See LICENSE file for copyright and license details. */
+typedef struct {
+	int *glyphwidths;
+	int nglyphs;
+} GlyphWidths;
 
 typedef struct {
 	Cursor cursor;
@@ -35,7 +39,7 @@ void drw_free(Drw *drw);
 Fnt *drw_fontset_create(Drw* drw, const char *fonts[], size_t fontcount);
 void drw_fontset_free(Fnt* set);
 unsigned int drw_fontset_getwidth(Drw *drw, const char *text);
-void drw_font_getexts(Fnt *font, const char *text, unsigned int len, unsigned int *w, unsigned int *h);
+GlyphWidths drw_font_getexts(Fnt *font, const char *text, unsigned int len, unsigned int *w, unsigned int *h);
 
 /* Colorscheme abstraction */
 void drw_clr_create(Drw *drw, Clr *dest, const char *clrname);
@@ -55,3 +59,8 @@ int drw_text(Drw *drw, int x, int y, unsigned int w, unsigned int h, unsigned in
 
 /* Map functions */
 void drw_map(Drw *drw, Window win, int x, int y, unsigned int w, unsigned int h);
+
+/* Patched drawing functions */
+void XftPatchedDrawStringUtf8 (Display	*dpy, XftDraw *draw, XftColor *color, XftFont *pub, int x, int	y, FcChar8 *string, int len, GlyphWidths gw);
+GlyphWidths XftPatchedGlyphExtents (Display	*dpy, XftFont	*pub, FT_UInt *glyphs, int nglyphs, XGlyphInfo *extents);
+GlyphWidths XftPatchedTextExtentsUtf8 (Display *dpy, XftFont *pub, FcChar8 *string, int len, XGlyphInfo	*extents);

@@ -13,7 +13,7 @@ static const int systraypinningfailfirst = 1;   /* 1: if pinning fails, display 
 static const int showsystray        = 1;     /* 0 means no systray */
 static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 1;        /* 0 means bottom bar */
-static const char *fonts[]          = { "iosevka:size=14", "fontawesome:size=14" };
+static const char *fonts[]          = { "Iosevka Nerd Font:size=12:style=Light" };
 static const char dmenufont[]       = "iosevka:size=14";
 static const char dmenulines[]      = "15";
 static const char col_bg_dark[]     = "#2d2d2d";
@@ -79,6 +79,7 @@ static const Layout layouts[] = {
 	{ ">M>",      centeredfloatingmaster },
 	{ "|||",      col },
 	{ "[D]",      deck },
+	{ "DD",       doubledeck },
 	{ "TTT",      bstack },
 	{ "===",      bstackhoriz },
 };
@@ -127,8 +128,9 @@ static Key keys[] = {
 	{ MODKEY|ShiftMask,             XK_u,      setlayout,      {.v = &layouts[4]} },
 	{ MODKEY,                       XK_c,      setlayout,      {.v = &layouts[5]} },
 	{ MODKEY,                       XK_r,      setlayout,      {.v = &layouts[6]} },
-	{ MODKEY,                       XK_y,      setlayout,      {.v = &layouts[7]} },
-	{ MODKEY|ShiftMask,             XK_y,      setlayout,      {.v = &layouts[8]} },
+	{ MODKEY|ShiftMask,             XK_r,      setlayout,      {.v = &layouts[7]} },
+	{ MODKEY,                       XK_y,      setlayout,      {.v = &layouts[8]} },
+	{ MODKEY|ShiftMask,             XK_y,      setlayout,      {.v = &layouts[9]} },
 	{ MODKEY,                       XK_space,  setlayout,      {0} },
 	{ MODKEY|ShiftMask,             XK_space,  togglefloating, {-1} },
 	{ MODKEY|ShiftMask,             XK_f,      togglefullscr,  {0} },
