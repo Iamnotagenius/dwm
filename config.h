@@ -5,6 +5,9 @@ static const unsigned int borderpx  = 2;        /* border pixel of windows */
 static const int decorhints  = 1;    /* 1 means respect decoration hints */
 static const unsigned int gappx     = 5;        /* gaps between windows */
 static const unsigned int snap      = 32;       /* snap pixel */
+static const int scalepreview       = 4;        /* tag preview scaling */
+
+
 static const int swallowfloating    = 0;        /* 1 means swallow floating windows by default */
 static const unsigned int systraypinning = 0;   /* 0: sloppy systray follows selected monitor, >0: pin systray to monitor X */
 static const unsigned int systrayonleft = 1;   	/* 0: systray in the right corner, >0: systray on left of status text */
@@ -13,7 +16,7 @@ static const int systraypinningfailfirst = 1;   /* 1: if pinning fails, display 
 static const int showsystray        = 1;     /* 0 means no systray */
 static const int showbar            = 1;        /* 0 means no bar */
 static const int topbar             = 1;        /* 0 means bottom bar */
-static const char *fonts[]          = { "Iosevka Nerd Font:size=12:style=Light" };
+static const char *fonts[]          = { "Iosevka Nerd Font:size=12:antialias=true" };
 static const char dmenufont[]       = "iosevka:size=14";
 static const char dmenulines[]      = "15";
 static const char col_bg_dark[]     = "#2d2d2d";
@@ -31,7 +34,7 @@ static const char *colors[][3]      = {
 };
 
 /* tagging */
-static const char *tags[] = { "", "", "", "", "", "", "", "" };
+static const char *tags[] = { "", "", "", "", "磊", "", "", "" };
 static const char *defaulttagapps[] = { "alacritty", "zathura", "code", NULL, "urxvt -e cmus", "/home/iamnotagenius/VMs/Shindows11/start_vm.sh", "steam", "/home/iamnotagenius/scripts/browsers.sh" };
 /* Bartabgroups properties */
 #define BARTAB_BORDERS 0       // 0 = off, 1 = on
@@ -55,6 +58,7 @@ static const Rule rules[] = {
 	{ "Tor Browser",		NULL,       NULL,           1 << 7,     0,       	1,          0,          0,    	    -1 },
 	{ "LibreWolf",			NULL,       NULL,           1 << 7,     0,         	1,	        0,	        0,          -1 },
 	{ "firefox",  			NULL,       NULL,           1 << 7,     0,			1,          0,          0,          -1 },
+	{ "Zathura",  			NULL,       NULL,           1 << 1,     0,			1,          0,          0,          -1 },
 	{ "Zathura",  			NULL,       NULL,           1 << 1,     0,			1,          0,          0,          -1 },
 	{ "discord",  			NULL,       NULL,           1 << 3,     0,			1,          0,          0,           1 },
 	{ "TelegramDesktop",	NULL,       NULL,           1 << 3,     0,			1,          0,          0,           1 },
@@ -103,7 +107,6 @@ static const char *termcmd[]  = { "alacritty", NULL };
 static const char *flameshotcmd[]  = { "flameshot", "gui", NULL };
 static const char *startgamecmd[]  = { "/home/iamnotagenius/scripts/startgame.sh", NULL };
 static const char *layoutmenu_cmd = "layoutmenu.sh";
-#include "shiftview.c"
 static Key keys[] = {
 	/* modifier                     key        function        argument */
 	{ MODKEY,  						XK_g,	   spawn,	   	   {.v = startgamecmd } },
@@ -120,7 +123,6 @@ static Key keys[] = {
 	{ MODKEY,                       XK_l,      setmfact,       {.f = +0.05} },
 	{ MODKEY|ControlMask,  			XK_Return, zoom,           {0} },
 	{ MODKEY,                       XK_Tab,    view,           {0} },
-	{ MODKEY|ShiftMask,             XK_c,      killclient,     {0} },
 	{ MODKEY,                       XK_t,      setlayout,      {.v = &layouts[0]} },
 	{ MODKEY,                       XK_f,      setlayout,      {.v = &layouts[1]} },
 	{ MODKEY,                       XK_m,      setlayout,      {.v = &layouts[2]} },
