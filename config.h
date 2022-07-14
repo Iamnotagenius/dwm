@@ -36,7 +36,7 @@ static const char *colors[][3]      = {
 
 /* tagging */
 static const char *tags[] = { "", "", "", "", "磊", "", "", "" };
-static const char *defaulttagapps[] = { "alacritty", "zathura", "code", NULL, "urxvt -e cmus", "/home/iamnotagenius/VMs/Shindows11/start_vm.sh", "steam", "/home/iamnotagenius/scripts/browsers.sh" };
+static const char *defaulttagapps[] = { "alacritty", "zathura", "code", NULL, "urxvt -e cmus", "/home/iamnotagenius/scripts/start_vm.sh", "steam", "/home/iamnotagenius/scripts/browsers.sh" };
 /* Bartabgroups properties */
 #define BARTAB_BORDERS 0       // 0 = off, 1 = on
 #define BARTAB_BOTTOMBORDER 0  // 0 = off, 1 = on
@@ -121,6 +121,7 @@ static Key keys[] = {
     { MODKEY|ShiftMask,             XK_b,      toggleextrabar, {0} },
 	{ MODKEY,                       XK_j,      focusstack,     {.i = +1 } },
 	{ MODKEY,                       XK_k,      focusstack,     {.i = -1 } },
+    { MODKEY,                       XK_n,      focusmaster,    {0} },
 	{ MODKEY,                       XK_i,      incnmaster,     {.i = +1 } },
 	{ MODKEY,                       XK_d,      incnmaster,     {.i = -1 } },
 	{ MODKEY,                       XK_h,      setmfact,       {.f = -0.05} },
@@ -163,8 +164,8 @@ static Button buttons[] = {
 	/* click                event mask      button          function        argument */
 	{ ClkLtSymbol,          0,              Button1,        setlayout,      {0} },
 	{ ClkLtSymbol,          0,              Button3,        layoutmenu,     {0} },
-	{ ClkWinTitle,          0,              Button2,        zoom,           {0} },
-	{ ClkStatusText,        0,              Button2,        spawn,          {.v = termcmd } },
+	{ ClkStatusText,        0,              Button2,        zoom,          {.v = termcmd } },
+    { ClkWinTitle,          0,              Button2,        killclient,     {0} },
 	{ ClkClientWin,         MODKEY,         Button1,        movemouse,      {0} },
 	{ ClkClientWin,         MODKEY,         Button2,        togglefloating, {0} },
 	{ ClkClientWin,         MODKEY,         Button3,        resizemouse,    {0} },
