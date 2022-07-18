@@ -86,7 +86,7 @@
 
 /* enums */
 enum { CurNormal, CurResize, CurMove, CurLast }; /* cursor */
-enum { SchemeNorm, SchemeSel, SchemeTabActive, SchemeTabInactive, SchemeTabHover }; /* color schemes */
+enum { SchemeNorm, SchemeSel, SchemeTabActive, SchemeTabInactive, SchemeHover }; /* color schemes */
 enum { NetSupported, NetWMName, NetWMState, NetWMCheck,
        NetSystemTray, NetSystemTrayOP, NetSystemTrayOrientation, NetSystemTrayOrientationHorz,
        NetWMFullscreen, NetActiveWindow, NetWMWindowType,
@@ -220,6 +220,7 @@ static int gettextprop(Window w, Atom atom, char *text, unsigned int size);
 static void grabbuttons(Client *c, int focused);
 static void grabkeys(void);
 static void incnmaster(const Arg *arg);
+static void setnmaster(const Arg *arg);
 static void keypress(XEvent *e);
 static void killclient(Client *c);
 static void killfocused(const Arg *arg);
@@ -510,7 +511,7 @@ bartabdraw(Monitor *m, Client *c, int unused, int x, int w, int groupactive) {
 
     drw_setscheme(drw, scheme[
         m->sel == c ? SchemeSel : 
-        c->tabhovered ? SchemeTabHover :
+        c->tabhovered ? SchemeHover :
         //groupactive ? SchemeTabActive : 
         SchemeTabInactive
     ]);
@@ -1060,7 +1061,7 @@ drawbar(Monitor *m)
     for (i = 0; i < LENGTH(tags); i++) {
         w = TEXTW(tags[i]);
         drw_setscheme(drw, scheme[m->tagset[m->seltags] & 1 << i ? SchemeSel : 
-                                              m->hoveredtag == i ? SchemeTabHover :
+                                              m->hoveredtag == i ? SchemeHover :
                                                                    SchemeNorm]);
         drw_text(drw, x, 0, w, bh, lrpad / 2, tags[i], urg & 1 << i);
         if (occ & 1 << i)
@@ -1374,6 +1375,13 @@ incnmaster(const Arg *arg)
     arrange(selmon);
 }
 
+void
+setnmaster(const Arg *arg)
+{
+    selmon->nmaster = MAX(arg->i, 0);
+    arrange(selmon);
+}
+
 #ifdef XINERAMA
 static int
 isuniquegeom(XineramaScreenInfo *unique, size_t n, XineramaScreenInfo *info)
@@ -1598,7 +1606,7 @@ motionnotify(XEvent *e)
         for (i = 0; i < LENGTH(tags); ++i) {
             w = TEXTW(tags[i]);
             drw_setscheme(drw, scheme[selmon->tagset[selmon->seltags] & 1 << i ? SchemeSel :
-                                                  ev->x >= x && ev->x <= x + w ? SchemeTabHover : 
+                                                  ev->x >= x && ev->x <= x + w ? SchemeHover : 
                                                                                  SchemeNorm]);
             drw_text(drw, x, 0, w, bh, lrpad / 2, tags[i], urg & 1 << i);
             if (occ & 1 << i)

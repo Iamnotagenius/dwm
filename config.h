@@ -33,7 +33,7 @@ static const char *colors[][3]      = {
 	[SchemeSel]  = { col_fg_dark, col_bg_light,  col_bg_light  },
 	[SchemeTabActive]  = { col_fg_light, col_bg_dark,  col_bg_dark },
 	[SchemeTabInactive]  = { col_fg_light,  col_bg_dark,  col_bg_dark },
-    [SchemeTabHover] = { col_fg_light, col_bg_hover, col_bg_light }
+    [SchemeHover] = { col_fg_light, col_bg_hover, col_bg_light }
 };
 
 /* tagging */
@@ -175,6 +175,9 @@ static Button buttons[] = {
 	{ ClkClientWin,         MODKEY,         Button1,        movemouse,      {0} },
 	{ ClkClientWin,         MODKEY,         Button2,        togglefloating, {0} },
 	{ ClkClientWin,         MODKEY,         Button3,        resizemouse,    {0} },
+    { ClkLtSymbol,          MODKEY,         Button1,        incnmaster,     { .i = +1 } },
+    { ClkLtSymbol,          MODKEY,         Button3,        incnmaster,     { .i = -1 } },
+    { ClkLtSymbol,          MODKEY,         Button2,        setnmaster,     { .i = 1 } },
 	{ ClkTagBar,            0,              Button1,        view,           {0} },
 	{ ClkTagBar,            0,              Button2,        arg_spawndefault,{0} },
 	{ ClkTagBar,            0,              Button3,        toggleview,     {0} },
