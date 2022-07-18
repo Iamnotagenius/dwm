@@ -86,7 +86,7 @@
 
 /* enums */
 enum { CurNormal, CurResize, CurMove, CurLast }; /* cursor */
-enum { SchemeNorm, SchemeSel, SchemeTabActive, SchemeTabInactive }; /* color schemes */
+enum { SchemeNorm, SchemeSel, SchemeTabActive, SchemeTabInactive, SchemeTabHover }; /* color schemes */
 enum { NetSupported, NetWMName, NetWMState, NetWMCheck,
        NetSystemTray, NetSystemTrayOP, NetSystemTrayOrientation, NetSystemTrayOrientationHorz,
        NetWMFullscreen, NetActiveWindow, NetWMWindowType,
@@ -121,7 +121,7 @@ struct Client {
     int basew, baseh, incw, inch, maxw, maxh, minw, minh;
     int bw, oldbw;
     unsigned int tags;
-    int isfixed, isfloating, canfocus, isurgent, neverfocus, oldstate, isfullscreen, isterminal, noswallow;
+    int isfixed, isfloating, canfocus, isurgent, neverfocus, oldstate, isfullscreen, isterminal, noswallow, tabhovered;
     pid_t pid;
     int issteam;
     Client *next;
@@ -181,6 +181,12 @@ static void arrange(Monitor *m);
 static void arrangemon(Monitor *m);
 static void attach(Client *c);
 static void attachstack(Client *c);
+static void bartabcalculate(Monitor *, int, int, int, void(*)(Monitor *, Client *, int, int, int, int));
+static void bartabclick(Monitor *, Client *, int, int, int, int);
+static void bartabkill(Monitor *, Client *, int, int, int, int);
+static void bartabhover(Monitor *, Client *, int, int, int, int);
+static void bartabzoom(Monitor *, Client *, int, int, int, int);
+static void bartabdraw(Monitor *, Client *, int, int, int, int);
 static void buttonpress(XEvent *e);
 static void checkotherwm(void);
 static void cleanup(void);
@@ -215,7 +221,8 @@ static void grabbuttons(Client *c, int focused);
 static void grabkeys(void);
 static void incnmaster(const Arg *arg);
 static void keypress(XEvent *e);
-static void killclient(const Arg *arg);
+static void killclient(Client *c);
+static void killfocused(const Arg *arg);
 static void layoutmenu(const Arg *arg);
 static void manage(Window w, XWindowAttributes *wa);
 static void mappingnotify(XEvent *e);
@@ -250,6 +257,7 @@ static void setmfact(const Arg *arg);
 static void setup(void);
 static void seturgent(Client *c, int urg);
 static void showhide(Client *c);
+static void showtagpreview(int);
 void shiftview(const Arg *arg);
 static void sigchld(int unused);
 static void spawn(const Arg *arg);
@@ -276,6 +284,7 @@ static void updatebars(void);
 static void updateclientlist(void);
 static int updategeom(void);
 static void updatenumlockmask(void);
+static void updatepreview(void);
 static void updatesizehints(Client *c);
 static void updatestatus(void);
 static void updatesystray(void);
@@ -291,7 +300,8 @@ static Client *wintosystrayicon(Window w);
 static int xerror(Display *dpy, XErrorEvent *ee);
 static int xerrordummy(Display *dpy, XErrorEvent *ee);
 static int xerrorstart(Display *dpy, XErrorEvent *ee);
-static void zoom(const Arg *arg);
+static void zoom(Monitor *, Client *);
+static void zoomfocused(const Arg *arg);
 static void centeredmaster(Monitor *m);
 static void centeredfloatingmaster(Monitor *m);
 static void bstack(Monitor *m);
@@ -498,7 +508,10 @@ bartabdraw(Monitor *m, Client *c, int unused, int x, int w, int groupactive) {
     int i, nclienttags = 0, nviewtags = 0;
 
     drw_setscheme(drw, scheme[
-        m->sel == c ? SchemeSel : (groupactive ? SchemeTabActive: SchemeTabInactive)
+        m->sel == c ? SchemeSel : 
+        c->tabhovered ? SchemeTabHover :
+        //groupactive ? SchemeTabActive : 
+        SchemeTabInactive
     ]);
     drw_text(drw, x, 0, w, bh, lrpad / 2, c->name, 0);
 
@@ -533,10 +546,31 @@ bartabdraw(Monitor *m, Client *c, int unused, int x, int w, int groupactive) {
 }
 
 void
-battabclick(Monitor *m, Client *c, int passx, int x, int w, int unused) {
+bartabclick(Monitor *m, Client *c, int passx, int x, int w, int unused) {
     if (passx >= x && passx <= x + w) {
         focus(c);
-        restack(selmon);
+        restack(m);
+    }
+}
+
+void
+bartabkill(Monitor *m, Client *c, int passx, int x, int w, int unused) {
+    if (passx >= x && passx <= x + w) {
+        killclient(c);
+    }
+}
+
+void
+bartabhover(Monitor *m, Client *c, int passx, int x, int w, int groupactive) {
+    c->tabhovered = passx >= x && passx <= x + w;
+    bartabdraw(m, c, passx, x, w, groupactive);
+    drw_map(drw, m->barwin, x, 0, w, bh);
+}
+
+void
+bartabzoom(Monitor *m, Client *c, int passx, int x, int w, int unused) {
+    if (passx >= x && passx <= x + w) {
+        zoom(m, c);
     }
 }
 
@@ -560,6 +594,7 @@ bartabcalculate(
     }
     for (i = 0; i < LENGTH(bartabfloatfns); i++) if (m ->lt[m->sellt]->arrange == bartabfloatfns[i]) { floatlayout = 1; break; }
     for (i = 0; i < LENGTH(bartabmonfns); i++) if (m ->lt[m->sellt]->arrange == bartabmonfns[i]) { fulllayout = 1; break; }
+
     for (c = m->clients, i = 0; c; c = c->next) {
         if (!ISVISIBLE(c)) continue;
         if (clientsnmaster + clientsnstack == 0 || floatlayout) {
@@ -653,7 +688,7 @@ buttonpress(XEvent *e)
         else if (ev->x > selmon->ww - TEXTW(stext) - getsystraywidth())
             click = ClkStatusText;
         else // Focus clicked tab bar item
-            bartabcalculate(selmon, x, TEXTW(stext) - lrpad + 2 + getsystraywidth(), ev->x, battabclick);
+            bartabcalculate(selmon, x, TEXTW(stext) - lrpad + 2 + getsystraywidth(), ev->x, bartabfuncs[ev->button]);
     } else if ((c = wintoclient(ev->window))) {
         focus(c);
         restack(selmon);
@@ -1046,10 +1081,10 @@ drawbar(Monitor *m)
         }
     }
 
-    drw_map(drw, m->barwin, 0, 0, m->ww - stw, bh);
+    drw_map(drw, m->barwin, 0, 0, m->ww, bh);
     drw_setscheme(drw, scheme[SchemeNorm]);
-    drw_text(drw, 0, 0, mons->ww, bh, lrpad / 2 - 2, eb.text, 0);
-    drw_map(drw, eb.win, 0, 0, mons->ww, bh);
+	drw_text(drw, 0, 0, mons->ww, bh, lrpad / 2 + 2, eb.text, 0);
+	drw_map(drw, eb.win, 0, 0, mons->ww, bh);
 }
 
 void
@@ -1365,19 +1400,25 @@ keypress(XEvent *e)
 }
 
 void
-killclient(const Arg *arg)
+killclient(Client *c)
+{
+    if (sendevent(c->win, wmatom[WMDelete], NoEventMask, wmatom[WMDelete], CurrentTime, 0 , 0, 0))
+        return;
+    XGrabServer(dpy);
+    XSetErrorHandler(xerrordummy);
+    XSetCloseDownMode(dpy, DestroyAll);
+    XKillClient(dpy, c->win);
+    XSync(dpy, False);
+    XSetErrorHandler(xerror);
+    XUngrabServer(dpy);
+};
+
+void
+killfocused(const Arg *arg)
 {
     if (!selmon->sel)
         return;
-    if (!sendevent(selmon->sel->win, wmatom[WMDelete], NoEventMask, wmatom[WMDelete], CurrentTime, 0 , 0, 0)) {
-        XGrabServer(dpy);
-        XSetErrorHandler(xerrordummy);
-        XSetCloseDownMode(dpy, DestroyAll);
-        XKillClient(dpy, selmon->sel->win);
-        XSync(dpy, False);
-        XSetErrorHandler(xerror);
-        XUngrabServer(dpy);
-    }
+    killclient(selmon->sel);
 }
 
 void
@@ -1517,12 +1558,12 @@ motionnotify(XEvent *e)
     Monitor *m;
     XMotionEvent *ev = &e->xmotion;
     unsigned int i, x;
-
     if (ev->window == selmon->barwin) {
         i = x = 0;
         do
             x += TEXTW(tags[i]);
         while (ev->x >= x && ++i < LENGTH(tags));
+
 
         if (i < LENGTH(tags)) {
             if ((i + 1) != selmon->previewshow && !(selmon->tagset[selmon->seltags] & 1 << i)) {
@@ -1536,9 +1577,17 @@ motionnotify(XEvent *e)
             selmon->previewshow = 0;
             showtagpreview(0);
         }
+        else {
+            bartabcalculate(selmon, x + TEXTW(selmon->ltsymbol), TEXTW(stext) - lrpad / 2 + getsystraywidth(), ev->x, bartabhover);
+        }
     } else if (selmon->previewshow != 0) {
         selmon->previewshow = 0;
         showtagpreview(0);
+    }
+    if (ev->window != selmon->barwin) {
+        Client *c;
+        for (c = selmon->clients; c; c = c->next)
+            c->tabhovered = 0;
     }
 
     if (ev->window != root)
@@ -1861,9 +1910,10 @@ run(void)
     XEvent ev;
     /* main event loop */
     XSync(dpy, False);
-    while (running && !XNextEvent(dpy, &ev))
+    while (running && !XNextEvent(dpy, &ev)) {
         if (handler[ev.type])
             handler[ev.type](&ev); /* call handler */
+    }
 }
 
 void
@@ -3216,17 +3266,23 @@ systraytomon(Monitor *m) {
 }
 
 void
-zoom(const Arg *arg)
+zoom(Monitor *m, Client *c)
 {
-    Client *c = selmon->sel;
+    Client *s = selmon->sel;
 
-    if (!selmon->lt[selmon->sellt]->arrange
-    || (selmon->sel && selmon->sel->isfloating))
+    if (!m->lt[m->sellt]->arrange
+    || (c && c->isfloating))
         return;
-    if (c == nexttiled(selmon->clients))
-        if (!c || !(c = nexttiled(c->next)))
+    if (s == nexttiled(m->clients))
+        if (!s || !(s = nexttiled(s->next)))
             return;
-    pop(c);
+    pop(s);
+}
+
+void
+zoomfocused(const Arg *arg)
+{
+    zoom(selmon, selmon->sel);
 }
 
 int

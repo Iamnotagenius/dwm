@@ -21,6 +21,7 @@ static const char *fonts[]          = { "Iosevka Nerd Font:size=12:antialias=tru
 static const char dmenufont[]       = "iosevka:size=14";
 static const char dmenulines[]      = "15";
 static const char col_bg_dark[]     = "#2d2d2d";
+static const char col_bg_hover[]    = "#6f5b6f";
 static const char col_bg_light[]    = "#cc99cc";
 static const char col_fg_dark[]     = "#2d2d2d";
 static const char col_fg_light[]    = "#d3d0c8";
@@ -31,7 +32,8 @@ static const char *colors[][3]      = {
 	[SchemeNorm] = { col_fg_light, col_bg_dark, col_bg_dark },
 	[SchemeSel]  = { col_fg_dark, col_bg_light,  col_bg_light  },
 	[SchemeTabActive]  = { col_fg_light, col_bg_dark,  col_bg_dark },
-	[SchemeTabInactive]  = { col_fg_light,  col_bg_dark,  col_bg_dark }
+	[SchemeTabInactive]  = { col_fg_light,  col_bg_dark,  col_bg_dark },
+    [SchemeTabHover] = { col_fg_light, col_bg_hover, col_bg_light }
 };
 
 /* tagging */
@@ -120,7 +122,7 @@ static Key keys[] = {
 	/* modifier                     key        function        argument */
 	{ MODKEY,						XK_p,	   spawn,	   	   {.v = dmenucmd } },
 	{ MODKEY,		        		XK_Return, spawn,          {.v = termcmd } },
-	{ MODKEY|ShiftMask,		        XK_c,      killclient,     {0} },
+	{ MODKEY|ShiftMask,		        XK_c,      killfocused,    {0} },
 	{ MODKEY,                       XK_s,      spawndefault,   {0} },
 	{ MODKEY,                       XK_b,      togglebar,      {0} },
     { MODKEY,                       XK_b,      toggleextrabar, {0} },
@@ -132,7 +134,7 @@ static Key keys[] = {
 	{ MODKEY,                       XK_d,      incnmaster,     {.i = -1 } },
 	{ MODKEY,                       XK_h,      setmfact,       {.f = -0.05} },
 	{ MODKEY,                       XK_l,      setmfact,       {.f = +0.05} },
-	{ MODKEY|ControlMask,  			XK_Return, zoom,           {0} },
+	{ MODKEY|ControlMask,  			XK_Return, zoomfocused,    {0} },
 	{ MODKEY,                       XK_Tab,    view,           {0} },
 	{ MODKEY,                       XK_t,      setlayout,      {.v = &layouts[0]} },
 	{ MODKEY,                       XK_f,      setlayout,      {.v = &layouts[1]} },
@@ -170,8 +172,6 @@ static Button buttons[] = {
 	/* click                event mask      button          function        argument */
 	{ ClkLtSymbol,          0,              Button1,        setlayout,      {0} },
 	{ ClkLtSymbol,          0,              Button3,        layoutmenu,     {0} },
-	{ ClkStatusText,        0,              Button2,        zoom,          {.v = termcmd } },
-    { ClkWinTitle,          0,              Button2,        killclient,     {0} },
 	{ ClkClientWin,         MODKEY,         Button1,        movemouse,      {0} },
 	{ ClkClientWin,         MODKEY,         Button2,        togglefloating, {0} },
 	{ ClkClientWin,         MODKEY,         Button3,        resizemouse,    {0} },
@@ -182,4 +182,10 @@ static Button buttons[] = {
 	{ ClkTagBar,            MODKEY,         Button3,        toggletag,      {0} },
 };
 
+/* Bar tab click events */
+static void(*bartabfuncs[])(Monitor *, Client *, int, int, int, int) = {
+    [Button1] = bartabclick, /* left click */
+    [Button2] = bartabkill, /* middle click */
+    [Button3] = bartabzoom /* right click */
+};
 
