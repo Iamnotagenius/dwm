@@ -370,6 +370,7 @@ struct Monitor {
     int mx, my, mw, mh;   /* screen size */
     int wx, wy, ww, wh;   /* window area  */
     int gappx;
+    unsigned int hoveredtag;
     unsigned int seltags;
     unsigned int sellt;
     unsigned int tagset[2];
@@ -688,7 +689,7 @@ buttonpress(XEvent *e)
         else if (ev->x > selmon->ww - TEXTW(stext) - getsystraywidth())
             click = ClkStatusText;
         else // Focus clicked tab bar item
-            bartabcalculate(selmon, x, TEXTW(stext) - lrpad + 2 + getsystraywidth(), ev->x, bartabfuncs[ev->button]);
+            bartabcalculate(selmon, x, TEXTW(stext) - lrpad / 2 + 2 + getsystraywidth(), ev->x, bartabfuncs[ev->button]);
     } else if ((c = wintoclient(ev->window))) {
         focus(c);
         restack(selmon);
@@ -1058,7 +1059,9 @@ drawbar(Monitor *m)
     x = 0;
     for (i = 0; i < LENGTH(tags); i++) {
         w = TEXTW(tags[i]);
-        drw_setscheme(drw, scheme[m->tagset[m->seltags] & 1 << i ? SchemeSel : SchemeNorm]);
+        drw_setscheme(drw, scheme[m->tagset[m->seltags] & 1 << i ? SchemeSel : 
+                                              m->hoveredtag == i ? SchemeTabHover :
+                                                                   SchemeNorm]);
         drw_text(drw, x, 0, w, bh, lrpad / 2, tags[i], urg & 1 << i);
         if (occ & 1 << i)
             drw_rect(drw, x + boxs, boxs, boxw, boxw,
@@ -1556,15 +1559,15 @@ motionnotify(XEvent *e)
 {
     static Monitor *mon = NULL;
     Monitor *m;
+    Client *c;
     XMotionEvent *ev = &e->xmotion;
-    unsigned int i, x;
+    unsigned int i, x, w;
     if (ev->window == selmon->barwin) {
         i = x = 0;
         do
             x += TEXTW(tags[i]);
         while (ev->x >= x && ++i < LENGTH(tags));
-
-
+        
         if (i < LENGTH(tags)) {
             if ((i + 1) != selmon->previewshow && !(selmon->tagset[selmon->seltags] & 1 << i)) {
                 selmon->previewshow = i + 1;
@@ -1573,13 +1576,41 @@ motionnotify(XEvent *e)
                 selmon->previewshow = 0;
                 showtagpreview(0);
             }
+
         } else if (selmon->previewshow != 0) {
             selmon->previewshow = 0;
             showtagpreview(0);
         }
         else {
-            bartabcalculate(selmon, x + TEXTW(selmon->ltsymbol), TEXTW(stext) - lrpad / 2 + getsystraywidth(), ev->x, bartabhover);
+            bartabcalculate(selmon, x + TEXTW(selmon->ltsymbol), TEXTW(stext) - lrpad / 2 + 2 + getsystraywidth(), ev->x, bartabhover);
         }
+
+        /* Tag hover effect */
+        unsigned int occ = 0, urg = 0;
+        int boxs = drw->fonts->h / 9;
+        int boxw = drw->fonts->h / 6 + 2;
+        for (c = selmon->clients; c; c = c->next) {
+            occ |= c->tags;
+            if (c->isurgent)
+                urg |= c->tags;
+        }
+        x = 0;
+        for (i = 0; i < LENGTH(tags); ++i) {
+            w = TEXTW(tags[i]);
+            drw_setscheme(drw, scheme[selmon->tagset[selmon->seltags] & 1 << i ? SchemeSel :
+                                                  ev->x >= x && ev->x <= x + w ? SchemeTabHover : 
+                                                                                 SchemeNorm]);
+            drw_text(drw, x, 0, w, bh, lrpad / 2, tags[i], urg & 1 << i);
+            if (occ & 1 << i)
+                drw_rect(drw, x + boxs, boxs, boxw, boxw,
+                    selmon->sel && selmon->sel->tags & 1 << i,
+                    urg & 1 << i);
+            if (ev->x >= x && ev->x <= x + w) {
+                selmon->hoveredtag = i;
+            }
+            x += w;
+        }
+        drw_map(drw, selmon->barwin, 0, 0, x, bh);
     } else if (selmon->previewshow != 0) {
         selmon->previewshow = 0;
         showtagpreview(0);
@@ -1588,7 +1619,9 @@ motionnotify(XEvent *e)
         Client *c;
         for (c = selmon->clients; c; c = c->next)
             c->tabhovered = 0;
+        selmon->hoveredtag = LENGTH(tags);
     }
+
 
     if (ev->window != root)
         return;
@@ -3268,15 +3301,15 @@ systraytomon(Monitor *m) {
 void
 zoom(Monitor *m, Client *c)
 {
-    Client *s = selmon->sel;
-
-    if (!m->lt[m->sellt]->arrange
-    || (c && c->isfloating))
-        return;
-    if (s == nexttiled(m->clients))
-        if (!s || !(s = nexttiled(s->next)))
-            return;
-    pop(s);
+    //Client *s = selmon->sel;
+//
+    //if (!m->lt[m->sellt]->arrange
+    //|| (c && c->isfloating))
+        //return;
+    //if (c == nexttiled(m->clients))
+        //if (!s || !(s = nexttiled(s->next)))
+            //return;
+    pop(c);
 }
 
 void

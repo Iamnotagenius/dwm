@@ -21,7 +21,7 @@ static const char *fonts[]          = { "Iosevka Nerd Font:size=12:antialias=tru
 static const char dmenufont[]       = "iosevka:size=14";
 static const char dmenulines[]      = "15";
 static const char col_bg_dark[]     = "#2d2d2d";
-static const char col_bg_hover[]    = "#6f5b6f";
+static const char col_bg_hover[]    = "#3d383d";
 static const char col_bg_light[]    = "#cc99cc";
 static const char col_fg_dark[]     = "#2d2d2d";
 static const char col_fg_light[]    = "#d3d0c8";
