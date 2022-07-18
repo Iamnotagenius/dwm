@@ -36,7 +36,16 @@ static const char *colors[][3]      = {
 
 /* tagging */
 static const char *tags[] = { "", "", "", "", "磊", "", "", "" };
-static const char *defaulttagapps[] = { "alacritty", "zathura", "code", NULL, "urxvt -e cmus", "/home/iamnotagenius/scripts/start_vm.sh", "steam", "/home/iamnotagenius/scripts/browsers.sh" };
+static const char *defaulttagapps[] = { 
+    "alacritty",
+    "zathura",
+    "code",
+    "/opt/discord/Discord",
+    "ytplay",
+    "start_vm",
+    "steam",
+    "browsers",
+};
 /* Bartabgroups properties */
 #define BARTAB_BORDERS 0       // 0 = off, 1 = on
 #define BARTAB_BOTTOMBORDER 0  // 0 = off, 1 = on
@@ -68,6 +77,7 @@ static const Rule rules[] = {
 	{ "code-oss",    		NULL,       NULL,           0,          0,			1,          0,          0,          -1 },
 	{ NULL,                 NULL,       "Event Tester", 0,          0,          1,          0,          1,          -1 }, /* xev */
 	{ "tabbed",             NULL,       NULL,           0,          0,          1,          0,          1,          -1 },
+	{ "Dragon-drop",        NULL,       NULL,           1 << 3,     1,          1,          0,          1,          -1 },
 };
 
 /* layout(s) */
@@ -105,13 +115,9 @@ static const Layout layouts[] = {
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
 static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-l", dmenulines, "-fn", dmenufont, "-nb", col_bg_dark, "-nf", col_fg_light, "-sb", col_bg_light, "-sf", col_fg_dark, NULL };
 static const char *termcmd[]  = { "alacritty", NULL };
-static const char *flameshotcmd[]  = { "flameshot", "gui", NULL };
-static const char *startgamecmd[]  = { "/home/iamnotagenius/scripts/startgame.sh", NULL };
-static const char *layoutmenu_cmd = "layoutmenu.sh";
+static const char *layoutmenu_cmd = "layoutmenu";
 static Key keys[] = {
 	/* modifier                     key        function        argument */
-	{ MODKEY,  						XK_g,	   spawn,	   	   {.v = startgamecmd } },
-	{ 0,  							XK_Print,  spawn,	   	   {.v = flameshotcmd } },
 	{ MODKEY,						XK_p,	   spawn,	   	   {.v = dmenucmd } },
 	{ MODKEY,		        		XK_Return, spawn,          {.v = termcmd } },
 	{ MODKEY|ShiftMask,		        XK_c,      killclient,     {0} },

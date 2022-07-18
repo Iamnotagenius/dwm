@@ -1391,7 +1391,7 @@ layoutmenu(const Arg *arg) {
     s = fgets(c, sizeof(c), p);
     pclose(p);
 
-    if (!s || *s == '\0' || c == '\0')
+    if (!s || *s == '\0')
          return;
 
     i = atoi(c);
@@ -3469,8 +3469,8 @@ spawndefault()
 {
     const char *app = defaulttagapps[lastchosentag[selmon->num]];
     if (app) {
-        const char *defaultcmd[] = {app, NULL};
-        Arg a = {.v = defaultcmd};
+        const char *cmd[] = {app, NULL};
+        Arg a = {.v = cmd};
         spawn(&a);
     }
 }
