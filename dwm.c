@@ -86,7 +86,7 @@
 
 /* enums */
 enum { CurNormal, CurResize, CurMove, CurLast }; /* cursor */
-enum { SchemeNorm, SchemeSel, SchemeTabActive, SchemeTabInactive, SchemeHover }; /* color schemes */
+enum { SchemeNorm, SchemeSel, SchemeTabActive, SchemeTabInactive }; /* color schemes */
 enum { NetSupported, NetWMName, NetWMState, NetWMCheck,
        NetSystemTray, NetSystemTrayOP, NetSystemTrayOrientation, NetSystemTrayOrientationHorz,
        NetWMFullscreen, NetActiveWindow, NetWMWindowType,
@@ -121,7 +121,7 @@ struct Client {
     int basew, baseh, incw, inch, maxw, maxh, minw, minh;
     int bw, oldbw;
     unsigned int tags;
-    int isfixed, isfloating, canfocus, isurgent, neverfocus, oldstate, isfullscreen, isterminal, noswallow, tabhovered;
+    int isfixed, isfloating, canfocus, isurgent, neverfocus, oldstate, isfullscreen, isterminal, noswallow;
     pid_t pid;
     int issteam;
     Client *next;
@@ -184,7 +184,6 @@ static void attachstack(Client *c);
 static void bartabcalculate(Monitor *, int, int, int, void(*)(Monitor *, Client *, int, int, int, int));
 static void bartabclick(Monitor *, Client *, int, int, int, int);
 static void bartabkill(Monitor *, Client *, int, int, int, int);
-static void bartabhover(Monitor *, Client *, int, int, int, int);
 static void bartabzoom(Monitor *, Client *, int, int, int, int);
 static void bartabdraw(Monitor *, Client *, int, int, int, int);
 static void buttonpress(XEvent *e);
@@ -371,7 +370,6 @@ struct Monitor {
     int mx, my, mw, mh;   /* screen size */
     int wx, wy, ww, wh;   /* window area  */
     int gappx;
-    unsigned int hoveredtag;
     unsigned int seltags;
     unsigned int sellt;
     unsigned int tagset[2];
@@ -511,8 +509,6 @@ bartabdraw(Monitor *m, Client *c, int unused, int x, int w, int groupactive) {
 
     drw_setscheme(drw, scheme[
         m->sel == c ? SchemeSel : 
-        c->tabhovered ? SchemeHover :
-        //groupactive ? SchemeTabActive : 
         SchemeTabInactive
     ]);
     drw_text(drw, x, 0, w, bh, lrpad / 2, c->name, 0);
@@ -560,13 +556,6 @@ bartabkill(Monitor *m, Client *c, int passx, int x, int w, int unused) {
     if (passx >= x && passx <= x + w) {
         killclient(c);
     }
-}
-
-void
-bartabhover(Monitor *m, Client *c, int passx, int x, int w, int groupactive) {
-    c->tabhovered = passx >= x && passx <= x + w;
-    bartabdraw(m, c, passx, x, w, groupactive);
-    drw_map(drw, m->barwin, x, 0, w, bh);
 }
 
 void
@@ -1061,7 +1050,6 @@ drawbar(Monitor *m)
     for (i = 0; i < LENGTH(tags); i++) {
         w = TEXTW(tags[i]);
         drw_setscheme(drw, scheme[m->tagset[m->seltags] & 1 << i ? SchemeSel : 
-                                              m->hoveredtag == i ? SchemeHover :
                                                                    SchemeNorm]);
         drw_text(drw, x, 0, w, bh, lrpad / 2, tags[i], urg & 1 << i);
         if (occ & 1 << i)
@@ -1589,47 +1577,11 @@ motionnotify(XEvent *e)
             selmon->previewshow = 0;
             showtagpreview(0);
         }
-        else {
-            bartabcalculate(selmon, x + TEXTW(selmon->ltsymbol), TEXTW(stext) - lrpad / 2 + 2 + getsystraywidth(), ev->x, bartabhover);
-        }
 
-        /* Tag hover effect */
-        unsigned int occ = 0, urg = 0;
-        int boxs = drw->fonts->h / 9;
-        int boxw = drw->fonts->h / 6 + 2;
-        for (c = selmon->clients; c; c = c->next) {
-            occ |= c->tags;
-            if (c->isurgent)
-                urg |= c->tags;
-        }
-        x = 0;
-        for (i = 0; i < LENGTH(tags); ++i) {
-            w = TEXTW(tags[i]);
-            drw_setscheme(drw, scheme[selmon->tagset[selmon->seltags] & 1 << i ? SchemeSel :
-                                                  ev->x >= x && ev->x <= x + w ? SchemeHover : 
-                                                                                 SchemeNorm]);
-            drw_text(drw, x, 0, w, bh, lrpad / 2, tags[i], urg & 1 << i);
-            if (occ & 1 << i)
-                drw_rect(drw, x + boxs, boxs, boxw, boxw,
-                    selmon->sel && selmon->sel->tags & 1 << i,
-                    urg & 1 << i);
-            if (ev->x >= x && ev->x <= x + w) {
-                selmon->hoveredtag = i;
-            }
-            x += w;
-        }
-        drw_map(drw, selmon->barwin, 0, 0, x, bh);
     } else if (selmon->previewshow != 0) {
         selmon->previewshow = 0;
         showtagpreview(0);
     }
-    if (ev->window != selmon->barwin) {
-        Client *c;
-        for (c = selmon->clients; c; c = c->next)
-            c->tabhovered = 0;
-        selmon->hoveredtag = LENGTH(tags);
-    }
-
 
     if (ev->window != root)
         return;

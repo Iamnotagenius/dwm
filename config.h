@@ -33,7 +33,6 @@ static const char *colors[][3]      = {
 	[SchemeSel]  = { col_fg_dark, col_bg_light,  col_bg_light  },
 	[SchemeTabActive]  = { col_fg_light, col_bg_dark,  col_bg_dark },
 	[SchemeTabInactive]  = { col_fg_light,  col_bg_dark,  col_bg_dark },
-    [SchemeHover] = { col_fg_light, col_bg_hover, col_bg_light }
 };
 
 /* tagging */
