@@ -665,8 +665,8 @@ void buttonpress(XEvent *e) {
             click = ClkLtSymbol;
         else if (ev->x > selmon->ww - TEXTW(stext) - getsystraywidth())
             click = ClkStatusText;
-        else // Focus clicked tab bar item
-            bartabcalculate(selmon, x, TEXTW(stext) - lrpad / 2 + 2 + getsystraywidth(), ev->x, bartabfuncs[ev->button]);
+        else if (ev->button <= 3) // Focus clicked tab bar item
+                bartabcalculate(selmon, x, TEXTW(stext) - lrpad / 2 + 2 + getsystraywidth(), ev->x, bartabfuncs[ev->button]);
     } else if ((c = wintoclient(ev->window))) {
         focus(c);
         restack(selmon);
