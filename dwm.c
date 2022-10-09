@@ -129,11 +129,12 @@ struct Client {
     Client *swallowing;
     Monitor *mon;
     Window win;
+    const char *layout;
 };
 
 typedef struct {
     unsigned int mod;
-    KeySym keysym;
+    KeyCode keycode;
     void (*func)(const Arg *);
     const Arg arg;
 } Key;
@@ -153,6 +154,7 @@ typedef struct {
     int isterminal;
     int noswallow;
     int monitor;
+    const char *layout;
 } Rule;
 
 typedef struct {
@@ -421,6 +423,7 @@ void applyrules(Client *c) {
             c->noswallow  = r->noswallow;
             c->isfloating = r->isfloating;
             c->canfocus = r->canfocus;
+            c->layout = r->layout;
             c->tags |= r->tags;
             for (m = mons; m && m->num != r->monitor; m = m->next);
             if (m)
@@ -1099,6 +1102,12 @@ void focus(Client *c) {
         grabbuttons(c, 1);
         XSetWindowBorder(dpy, c->win, scheme[SchemeSel][ColBorder].pixel);
         setfocus(c);
+        if (c->layout)
+        {
+            const char *args[] = { "setxkbmap", c->layout, NULL };
+            Arg a = { .v = args };
+            spawn(&a);
+        }
     }
     else {
         XSetInputFocus(dpy, root, RevertToPointerRoot, CurrentTime);
@@ -1281,14 +1290,12 @@ void grabkeys(void) {
     {
         unsigned int i, j;
         unsigned int modifiers[] = { 0, LockMask, numlockmask, numlockmask|LockMask };
-        KeyCode code;
 
         XUngrabKey(dpy, AnyKey, AnyModifier, root);
         for (i = 0; i < LENGTH(keys); i++)
-            if ((code = XKeysymToKeycode(dpy, keys[i].keysym)))
-                for (j = 0; j < LENGTH(modifiers); j++)
-                    XGrabKey(dpy, code, keys[i].mod | modifiers[j], root,
-                            True, GrabModeAsync, GrabModeAsync);
+            for (j = 0; j < LENGTH(modifiers); j++)
+                XGrabKey(dpy, keys[i].keycode, keys[i].mod | modifiers[j], root,
+                        True, GrabModeAsync, GrabModeAsync);
     }
 }
 
@@ -1315,13 +1322,11 @@ isuniquegeom(XineramaScreenInfo *unique, size_t n, XineramaScreenInfo *info) {
 
 void keypress(XEvent *e) {
     unsigned int i;
-    KeySym keysym;
     XKeyEvent *ev;
 
     ev = &e->xkey;
-    keysym = XKeycodeToKeysym(dpy, (KeyCode)ev->keycode, 0);
     for (i = 0; i < LENGTH(keys); i++)
-        if (keysym == keys[i].keysym
+        if (ev->keycode == keys[i].keycode
                 && CLEANMASK(keys[i].mod) == CLEANMASK(ev->state)
                 && keys[i].func)
             keys[i].func(&(keys[i].arg));

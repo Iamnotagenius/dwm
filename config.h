@@ -60,24 +60,25 @@ static const Rule rules[] = {
      *	WM_CLASS(STRING) = instance, class
      *	WM_NAME(STRING) = title
      */
-    /* class    	  		instance    title           tags mask   isfloating 	canfocus    isterminal  noswallow   monitor */
-    { "Alacritty",    		NULL,       NULL,           0,          0,			1,          1,          0,          -1 },
-    { "Qemu-system-x86_64", NULL,       NULL,           1 << 5,     0, 			1,          0,          0,          -1 },
-    { "qutebrowser",		NULL,       NULL,           1 << 7,     0, 			1,          0,          0,          -1 },
-    { "Chromium",			NULL,       NULL,           1 << 7,     0, 			1,          0,          0,          -1 },
-    { "Tor Browser",		NULL,       NULL,           1 << 7,     0,       	1,          0,          0,    	    -1 },
-    { "LibreWolf",			NULL,       NULL,           1 << 7,     0,         	1,	        0,	        0,          -1 },
-    { "firefox",  			NULL,       NULL,           1 << 7,     0,			1,          0,          0,          -1 },
-    { "Zathura",  			NULL,       NULL,           1 << 1,     0,			1,          0,          0,          -1 },
-    { "Zathura",  			NULL,       NULL,           1 << 1,     0,			1,          0,          0,          -1 },
-    { "discord",  			NULL,       NULL,           1 << 3,     0,			1,          0,          0,           1 },
-    { "TelegramDesktop",	NULL,       NULL,           1 << 3,     0,			1,          0,          0,           1 },
-    { "Steam",      		NULL,       NULL,           1 << 6,     0,			1,          0,          0,           0 },
-    { "mpv", 	     		NULL,       NULL,           0,          0,			1,          0,          0,           0 },
-    { "code-oss",    		NULL,       NULL,           0,          0,			1,          0,          0,          -1 },
-    { NULL,                 NULL,       "Event Tester", 0,          0,          1,          0,          1,          -1 }, /* xev */
-    { "tabbed",             NULL,       NULL,           0,          0,          1,          0,          1,          -1 },
-    { "Dragon-drop",        NULL,       NULL,           1 << 3,     1,          1,          0,          1,          -1 },
+    /* class    	  		instance    title           tags mask   isfloating 	canfocus    isterminal  noswallow   monitor layout */
+    { "Alacritty",    		NULL,       NULL,           0,          0,			1,          1,          0,          -1,     "us,ru" },
+    { "neovide",    		NULL,       NULL,           0,          0,			1,          0,          0,          -1,     "us,ru" },
+    { "Qemu-system-x86_64", NULL,       NULL,           1 << 5,     0, 			1,          0,          0,          -1,     NULL },
+    { "qutebrowser",		NULL,       NULL,           1 << 7,     0, 			1,          0,          0,          -1,     NULL },
+    { "Chromium",			NULL,       NULL,           1 << 7,     0, 			1,          0,          0,          -1,     NULL },
+    { "Tor Browser",		NULL,       NULL,           1 << 7,     0,       	1,          0,          0,    	    -1,     NULL },
+    { "LibreWolf",			NULL,       NULL,           1 << 7,     0,         	1,	        0,	        0,          -1,     NULL },
+    { "firefox",  			NULL,       NULL,           1 << 7,     0,			1,          0,          0,          -1,     NULL },
+    { "Zathura",  			NULL,       NULL,           1 << 1,     0,			1,          0,          0,          -1,     NULL },
+    { "Zathura",  			NULL,       NULL,           1 << 1,     0,			1,          0,          0,          -1,     NULL },
+    { "discord",  			NULL,       NULL,           1 << 3,     0,			1,          0,          0,           1,     "ru,us" },
+    { "TelegramDesktop",	NULL,       NULL,           1 << 3,     0,			1,          0,          0,           1,     "ru,us" },
+    { "Steam",      		NULL,       NULL,           1 << 6,     0,			1,          0,          0,           0,     NULL },
+    { "mpv", 	     		NULL,       NULL,           0,          0,			1,          0,          0,           0,     NULL },
+    { "code-oss",    		NULL,       NULL,           0,          0,			1,          0,          0,          -1,     NULL },
+    { NULL,                 NULL,       "Event Tester", 0,          0,          1,          0,          1,          -1,     NULL }, /* xev */
+    { "tabbed",             NULL,       NULL,           0,          0,          1,          0,          1,          -1,     NULL },
+    { "Dragon-drop",        NULL,       NULL,           1 << 3,     1,          1,          0,          1,          -1,     NULL },
 };
 
 /* layout(s) */
@@ -134,51 +135,51 @@ static const char *dmenucmd[] = {
 static const char *termcmd[]  = { "alacritty", NULL };
 static const char *layoutmenu_cmd = "layoutmenu";
 static Key keys[] = {
-    /* modifier                     key        function        argument */
-    { MODKEY,						XK_p,	   spawn,	   	   {.v = dmenucmd } },
-    { MODKEY,		        		XK_Return, spawn,          {.v = termcmd } },
-    { MODKEY|ShiftMask,		        XK_c,      killfocused,    {0} },
-    { MODKEY,                       XK_s,      spawndefault,   {0} },
-    { MODKEY,                       XK_b,      togglebar,      {0} },
-    { MODKEY,                       XK_b,      toggleextrabar, {0} },
-    { MODKEY|ShiftMask,             XK_b,      toggleextrabar, {0} },
-    { MODKEY,                       XK_j,      focusstack,     {.i = +1 } },
-    { MODKEY,                       XK_k,      focusstack,     {.i = -1 } },
-    { MODKEY,                       XK_n,      focusmaster,    {0} },
-    { MODKEY,                       XK_i,      incnmaster,     {.i = +1 } },
-    { MODKEY,                       XK_d,      incnmaster,     {.i = -1 } },
-    { MODKEY,                       XK_h,      setmfact,       {.f = -0.05} },
-    { MODKEY,                       XK_l,      setmfact,       {.f = +0.05} },
-    { MODKEY|ControlMask,  			XK_Return, zoomfocused,    {0} },
-    { MODKEY,                       XK_Tab,    view,           {0} },
-    { MODKEY,                       XK_t,      setlayout,      {.v = &layouts[0]} },
-    { MODKEY,                       XK_f,      setlayout,      {.v = &layouts[1]} },
-    { MODKEY,                       XK_m,      setlayout,      {.v = &layouts[2]} },
-    { MODKEY,                       XK_u,      setlayout,      {.v = &layouts[3]} },
-    { MODKEY|ShiftMask,             XK_u,      setlayout,      {.v = &layouts[4]} },
-    { MODKEY,                       XK_c,      setlayout,      {.v = &layouts[5]} },
-    { MODKEY,                       XK_r,      setlayout,      {.v = &layouts[6]} },
-    { MODKEY|ShiftMask,             XK_r,      setlayout,      {.v = &layouts[7]} },
-    { MODKEY,                       XK_y,      setlayout,      {.v = &layouts[8]} },
-    { MODKEY|ShiftMask,             XK_y,      setlayout,      {.v = &layouts[9]} },
-    { MODKEY,                       XK_space,  setlayout,      {0} },
-    { MODKEY|ShiftMask,             XK_space,  togglefloating, {-1} },
-    { MODKEY|ShiftMask,             XK_f,      togglefullscr,  {0} },
-    { MODKEY,                       XK_0,      view,           {.ui = ~0 } },
-    { MODKEY|ShiftMask,             XK_0,      tag,            {.ui = ~0 } },
-    { MODKEY,                       XK_comma,  shiftview,      {.i = -1 } },
-    { MODKEY,                       XK_period, shiftview,      {.i = +1 } },
-    { MODKEY,                       XK_slash,  focusmon,       {.i = +1 } },
-    { MODKEY|ShiftMask,             XK_slash,  tagmon,         {.i = +1 } },
-    TAGKEYS(                        XK_1,                      0)
-    TAGKEYS(                        XK_2,                      1)
-    TAGKEYS(                        XK_3,                      2)
-    TAGKEYS(                        XK_4,                      3)
-    TAGKEYS(                        XK_5,                      4)
-    TAGKEYS(                        XK_6,                      5)
-    TAGKEYS(                        XK_7,                      6)
-    TAGKEYS(                        XK_8,                      7)
-    { MODKEY|ShiftMask,             XK_q,      quit,           {0} },
+    /* modifier                     key             function        argument */
+    { MODKEY,						33, /* p */	    spawn,	   	    {.v = dmenucmd } },
+    { MODKEY,		        		36, /* Enter */ spawn,          {.v = termcmd } },
+    { MODKEY|ShiftMask,		        54, /* c */     killfocused,    {0} },
+    { MODKEY,                       39, /* s */     spawndefault,   {0} },
+    { MODKEY,                       56, /* b */     togglebar,      {0} },
+    { MODKEY,                       56,             toggleextrabar, {0} },
+    { MODKEY|ShiftMask,             56,             toggleextrabar, {0} },
+    { MODKEY,                       44, /* j */     focusstack,     {.i = +1 } },
+    { MODKEY,                       45, /* k */     focusstack,     {.i = -1 } },
+    { MODKEY,                       57, /* n */     focusmaster,    {0} },
+    { MODKEY,                       31, /* i */     incnmaster,     {.i = +1 } },
+    { MODKEY,                       40, /* d */     incnmaster,     {.i = -1 } },
+    { MODKEY,                       43, /* h */     setmfact,       {.f = -0.05} },
+    { MODKEY,                       46, /* l */     setmfact,       {.f = +0.05} },
+    { MODKEY|ControlMask,  			36, /* Enter */ zoomfocused,    {0} },
+    { MODKEY,                       23, /* Tab */   view,           {0} },
+    { MODKEY,                       28, /* t */     setlayout,      {.v = &layouts[0]} },
+    { MODKEY,                       41, /* f */     setlayout,      {.v = &layouts[1]} },
+    { MODKEY,                       58, /* m */     setlayout,      {.v = &layouts[2]} },
+    { MODKEY,                       30, /* u */     setlayout,      {.v = &layouts[3]} },
+    { MODKEY|ShiftMask,             30,             setlayout,      {.v = &layouts[4]} },
+    { MODKEY,                       54,             setlayout,      {.v = &layouts[5]} },
+    { MODKEY,                       27, /* r */     setlayout,      {.v = &layouts[6]} },
+    { MODKEY|ShiftMask,             27,             setlayout,      {.v = &layouts[7]} },
+    { MODKEY,                       29, /* y */     setlayout,      {.v = &layouts[8]} },
+    { MODKEY|ShiftMask,             29,             setlayout,      {.v = &layouts[9]} },
+    { MODKEY,                       65, /* Space */ setlayout,      {0} },
+    { MODKEY|ShiftMask,             65,             togglefloating, {-1} },
+    { MODKEY|ShiftMask,             41,             togglefullscr,  {0} },
+    { MODKEY,                       19, /* 0 */     view,           {.ui = ~0 } },
+    { MODKEY|ShiftMask,             19,             tag,            {.ui = ~0 } },
+    { MODKEY,                       59, /* , */     shiftview,      {.i = -1 } },
+    { MODKEY,                       60, /* . */     shiftview,      {.i = +1 } },
+    { MODKEY,                       61, /* / */     focusmon,       {.i = +1 } },
+    { MODKEY|ShiftMask,             61, /* / */     tagmon,         {.i = +1 } },
+    TAGKEYS(                        10, /* 1 */                     0)
+    TAGKEYS(                        11, /* 2 */                     1)
+    TAGKEYS(                        12, /* 3 */                     2)
+    TAGKEYS(                        13, /* 4 */                     3)
+    TAGKEYS(                        14, /* 5 */                     4)
+    TAGKEYS(                        15, /* 6 */                     5)
+    TAGKEYS(                        16, /* 7 */                     6)
+    TAGKEYS(                        17, /* 8 */                     7)
+    { MODKEY|ShiftMask,             24, /* q */     quit,           {0} },
 };
 
 /* button definitions */
