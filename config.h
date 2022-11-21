@@ -61,27 +61,27 @@ static const Rule rules[] = {
      *	WM_CLASS(STRING) = instance, class
      *	WM_NAME(STRING) = title
      */
-    /* class    	  		instance    title           tags mask   isfloating 	canfocus    isterminal  noswallow   monitor layout */
-    { "Alacritty",    		NULL,       NULL,           0,          0,			1,          1,          0,          -1,     "us,ru" },
-    { NULL,     		    NULL,       "Calc",         0,          1,			1,          0,          0,          -1,     "us,ru" },
-    { "neovide",    		NULL,       NULL,           0,          0,			1,          0,          0,          -1,     "us,ru" },
-    { "Qemu-system-x86_64", NULL,       NULL,           1 << 5,     0, 			1,          0,          0,          -1,     NULL },
-    { "qutebrowser",		NULL,       NULL,           1 << 7,     0, 			1,          0,          0,          -1,     NULL },
-    { "Chromium",			NULL,       NULL,           1 << 7,     0, 			1,          0,          0,          -1,     NULL },
-    { "Brave-browser",		NULL,       NULL,           1 << 7,     0, 			1,          0,          0,          -1,     NULL },
-    { "Tor Browser",		NULL,       NULL,           1 << 7,     0,       	1,          0,          0,    	    -1,     NULL },
-    { "LibreWolf",			NULL,       NULL,           1 << 7,     0,         	1,	        0,	        0,          -1,     NULL },
-    { "firefox",  			NULL,       NULL,           1 << 7,     0,			1,          0,          0,          -1,     NULL },
-    { "Zathura",  			NULL,       NULL,           1 << 1,     0,			1,          0,          0,          -1,     NULL },
-    { "Zathura",  			NULL,       NULL,           1 << 1,     0,			1,          0,          0,          -1,     NULL },
-    { "discord",  			NULL,       NULL,           1 << 3,     0,			1,          0,          0,           1,     "ru,us" },
-    { "TelegramDesktop",	NULL,       NULL,           1 << 3,     0,			1,          0,          0,           1,     "ru,us" },
-    { "Steam",      		NULL,       NULL,           1 << 6,     0,			1,          0,          0,           0,     NULL },
-    { "mpv", 	     		NULL,       NULL,           0,          0,			1,          0,          0,           0,     NULL },
-    { "code-oss",    		NULL,       NULL,           0,          0,			1,          0,          0,          -1,     NULL },
-    { NULL,                 NULL,       "Event Tester", 0,          0,          1,          0,          1,          -1,     NULL }, /* xev */
-    { "tabbed",             NULL,       NULL,           0,          0,          1,          0,          1,          -1,     NULL },
-    { "Dragon-drop",        NULL,       NULL,           1 << 3,     1,          1,          0,          1,          -1,     NULL },
+    /* class    	  		instance    title           tags mask   isfloating  float x    y    w    h      floatborderpx   canfocus    isterminal  noswallow   monitor layout */
+    { "Alacritty",    		NULL,       NULL,           0,          0,			      50,  50,  500, 500,           -1,             1,          1,          0,          -1,     "us,ru" },
+    { NULL,     		    NULL,       "Calc",         0,          1,			      1320,80,  500, 650,           -1,             1,          0,          0,          -1,     "us,ru" },
+    { "neovide",    		NULL,       NULL,           0,          0,			      50,  50,  500, 500,           -1,             1,          0,          0,          -1,     "us,ru" },
+    { "Qemu-system-x86_64", NULL,       NULL,           1 << 5,     0, 			      50,  50,  500, 500,           -1,             1,          0,          0,          -1,     NULL },
+    { "qutebrowser",		NULL,       NULL,           1 << 7,     0, 			      50,  50,  500, 500,           -1,             1,          0,          0,          -1,     NULL },
+    { "Chromium",			NULL,       NULL,           1 << 7,     0, 			      50,  50,  500, 500,           -1,             1,          0,          0,          -1,     NULL },
+    { "Brave-browser",		NULL,       NULL,           1 << 7,     0, 			      50,  50,  500, 500,           -1,             1,          0,          0,          -1,     NULL },
+    { "Tor Browser",		NULL,       NULL,           1 << 7,     0,       	      50,  50,  500, 500,           -1,             1,          0,          0,    	    -1,     NULL },
+    { "LibreWolf",			NULL,       NULL,           1 << 7,     0,         	      50,  50,  500, 500,           -1,             1,	        0,	        0,          -1,     NULL },
+    { "firefox",  			NULL,       NULL,           1 << 7,     0,			      50,  50,  500, 500,           -1,             1,          0,          0,          -1,     NULL },
+    { "Zathura",  			NULL,       NULL,           1 << 1,     0,			      50,  50,  500, 500,           -1,             1,          0,          0,          -1,     NULL },
+    { "Zathura",  			NULL,       NULL,           1 << 1,     0,			      50,  50,  500, 500,           -1,             1,          0,          0,          -1,     NULL },
+    { "discord",  			NULL,       NULL,           1 << 3,     0,			      50,  50,  500, 500,           -1,             1,          0,          0,           1,     "ru,us" },
+    { "TelegramDesktop",	NULL,       NULL,           1 << 3,     0,			      50,  50,  500, 500,           -1,             1,          0,          0,           1,     "ru,us" },
+    { "Steam",      		NULL,       NULL,           1 << 6,     0,			      50,  50,  500, 500,           -1,             1,          0,          0,           0,     NULL },
+    { "mpv", 	     		NULL,       NULL,           0,          0,			      50,  50,  500, 500,           -1,             1,          0,          0,           0,     NULL },
+    { "code-oss",    		NULL,       NULL,           0,          0,			      50,  50,  500, 500,           -1,             1,          0,          0,          -1,     NULL },
+    { NULL,                 NULL,       "Event Tester", 0,          0,                50,  50,  500, 500,           -1,             1,          0,          1,          -1,     NULL }, /* xev */
+    { "tabbed",             NULL,       NULL,           0,          0,                50,  50,  500, 500,           -1,             1,          0,          1,          -1,     NULL },
+    { "Dragon-drop",        NULL,       NULL,           1 << 3,     1,                0,   0,   500, 500,           -1,             1,          0,          1,          -1,     NULL },
 };
 
 /* layout(s) */
