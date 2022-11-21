@@ -63,10 +63,12 @@ static const Rule rules[] = {
      */
     /* class    	  		instance    title           tags mask   isfloating 	canfocus    isterminal  noswallow   monitor layout */
     { "Alacritty",    		NULL,       NULL,           0,          0,			1,          1,          0,          -1,     "us,ru" },
+    { NULL,     		    NULL,       "Calc",         0,          1,			1,          0,          0,          -1,     "us,ru" },
     { "neovide",    		NULL,       NULL,           0,          0,			1,          0,          0,          -1,     "us,ru" },
     { "Qemu-system-x86_64", NULL,       NULL,           1 << 5,     0, 			1,          0,          0,          -1,     NULL },
     { "qutebrowser",		NULL,       NULL,           1 << 7,     0, 			1,          0,          0,          -1,     NULL },
     { "Chromium",			NULL,       NULL,           1 << 7,     0, 			1,          0,          0,          -1,     NULL },
+    { "Brave-browser",		NULL,       NULL,           1 << 7,     0, 			1,          0,          0,          -1,     NULL },
     { "Tor Browser",		NULL,       NULL,           1 << 7,     0,       	1,          0,          0,    	    -1,     NULL },
     { "LibreWolf",			NULL,       NULL,           1 << 7,     0,         	1,	        0,	        0,          -1,     NULL },
     { "firefox",  			NULL,       NULL,           1 << 7,     0,			1,          0,          0,          -1,     NULL },
