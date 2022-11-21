@@ -148,6 +148,8 @@ static Key keys[] = {
     { MODKEY|ShiftMask,             56,             toggleextrabar, {0} },
     { MODKEY,                       44, /* j */     focusstack,     {.i = +1 } },
     { MODKEY,                       45, /* k */     focusstack,     {.i = -1 } },
+    { MODKEY,                       34, /* [ */     setgaps,        {.i = -5 } },
+    { MODKEY,                       35, /* ] */     setgaps,        {.i = +5 } },
     { MODKEY,                       57, /* n */     focusmaster,    {0} },
     { MODKEY,                       31, /* i */     incnmaster,     {.i = +1 } },
     { MODKEY,                       40, /* d */     incnmaster,     {.i = -1 } },
