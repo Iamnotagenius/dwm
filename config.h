@@ -16,6 +16,7 @@ static const int showsystray        = 1;     /* 0 means no systray */
 static const int showbar            = 1;        /* 0 means no bar */
 static const int extrabar           = 0;        /* 0 means no extra bar */
 static const int topbar             = 1;        /* 0 means bottom bar */
+static const char *default_keymap   = "us,ru";
 static const char *fonts[]          = { "Iosevka Nerd Font:size=12:antialias=true" };
 static const char dmenufont[]       = "iosevka:size=14";
 static const char dmenulines[]      = "15";

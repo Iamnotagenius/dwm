@@ -1102,12 +1102,15 @@ void focus(Client *c) {
         grabbuttons(c, 1);
         XSetWindowBorder(dpy, c->win, scheme[SchemeSel][ColBorder].pixel);
         setfocus(c);
-        if (c->layout)
-        {
-            const char *args[] = { "setxkbmap", c->layout, NULL };
-            Arg a = { .v = args };
-            spawn(&a);
-        }
+
+        const char *layout = c->layout;
+        if (!c->layout)
+            c->layout = default_keymap;
+
+        const char *args[] = { "setxkbmap", layout, NULL };
+        Arg a = { .v = args };
+        spawn(&a);
+
     }
     else {
         XSetInputFocus(dpy, root, RevertToPointerRoot, CurrentTime);
